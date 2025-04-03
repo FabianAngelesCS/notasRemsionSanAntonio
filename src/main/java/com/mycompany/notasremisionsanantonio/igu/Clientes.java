@@ -22,7 +22,7 @@ public class Clientes extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         crearNota = new javax.swing.JButton();
-        crearNota1 = new javax.swing.JButton();
+        agregarCliente = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -87,12 +87,12 @@ public class Clientes extends javax.swing.JFrame {
         crearNota.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         crearNota.setText("CREAR NOTA");
 
-        crearNota1.setBackground(new java.awt.Color(0, 204, 204));
-        crearNota1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        crearNota1.setText("AGREGAR CLIENTE");
-        crearNota1.addActionListener(new java.awt.event.ActionListener() {
+        agregarCliente.setBackground(new java.awt.Color(0, 204, 204));
+        agregarCliente.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        agregarCliente.setText("AGREGAR CLIENTE");
+        agregarCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                crearNota1ActionPerformed(evt);
+                agregarClienteActionPerformed(evt);
             }
         });
 
@@ -108,7 +108,7 @@ public class Clientes extends javax.swing.JFrame {
                 .addContainerGap(109, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(44, 44, 44)
-                .addComponent(crearNota1)
+                .addComponent(agregarCliente)
                 .addGap(18, 18, 18))
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel2Layout.createSequentialGroup()
@@ -122,7 +122,7 @@ public class Clientes extends javax.swing.JFrame {
                 .addGap(12, 12, 12)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(crearNota1))
+                    .addComponent(agregarCliente))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -147,13 +147,13 @@ public class Clientes extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void crearNota1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearNota1ActionPerformed
+    private void agregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarClienteActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_crearNota1ActionPerformed
+    }//GEN-LAST:event_agregarClienteActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton agregarCliente;
     private javax.swing.JButton crearNota;
-    private javax.swing.JButton crearNota1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
