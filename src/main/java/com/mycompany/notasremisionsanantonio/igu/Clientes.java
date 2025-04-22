@@ -148,7 +148,9 @@ public class Clientes extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarClienteActionPerformed
-        // TODO add your handling code here:
+        AgregarCliente pantallaAgregarCliente = new AgregarCliente();
+        pantallaAgregarCliente.setVisible(true);
+        pantallaAgregarCliente.setLocationRelativeTo(null);
     }//GEN-LAST:event_agregarClienteActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
