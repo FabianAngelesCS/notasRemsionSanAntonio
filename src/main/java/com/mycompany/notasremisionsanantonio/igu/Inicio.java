@@ -80,7 +80,7 @@ public class Inicio extends javax.swing.JFrame {
         });
 
         jLabel4.setBackground(new java.awt.Color(204, 204, 204));
-        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\10\\Documents\\NetBeansProjects\\notasRemisionSanAntonio\\src\\images\\SANaNTONIO.png")); // NOI18N
+        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\Tianj\\Documents\\NetBeansProjects\\notasRemsionSanAntonio\\src\\images\\SANaNTONIO.png")); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -204,9 +204,10 @@ public class Inicio extends javax.swing.JFrame {
 
     private void crearNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearNotaActionPerformed
     
-        AgregarNota pantallaAgregarNota = new AgregarNota();
+        AgregarNota pantallaAgregarNota = new AgregarNota(this);  // Pasa "this" (Inicio)
         pantallaAgregarNota.setVisible(true);
         pantallaAgregarNota.setLocationRelativeTo(null);
+        this.setVisible(false);  // Opcional: Oculta Inicio temporalmente
     }//GEN-LAST:event_crearNotaActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
