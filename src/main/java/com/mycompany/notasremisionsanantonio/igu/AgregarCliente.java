@@ -1,8 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.mycompany.notasremisionsanantonio.igu;
+
+import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
 
 public class AgregarCliente extends javax.swing.JFrame {
 
@@ -196,11 +195,29 @@ public class AgregarCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void guardarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarClienteActionPerformed
-        // TODO add your handling code here:
+        String nombre = nombreCliente.getText();
+        String telefono = telefonoCliente.getText();
+        String direccion = direccioncliente.getText();
+        String observaciones = observacionesCliente.getText();
+
+        ClienteDAO clienteDAO = new ClienteDAO();
+        boolean exito = clienteDAO.agregarCliente(nombre, telefono, direccion, observaciones);
+
+        if (exito) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Cliente guardado correctamente.");
+            limpiarActionPerformed(evt);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar el cliente.");
+        }
+        
+        
     }//GEN-LAST:event_guardarClienteActionPerformed
 
     private void limpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarActionPerformed
-        // TODO add your handling code here:
+        nombreCliente.setText("");
+        telefonoCliente.setText("");
+        direccioncliente.setText("");
+        observacionesCliente.setText("");
     }//GEN-LAST:event_limpiarActionPerformed
 
     private void direccionclienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direccionclienteActionPerformed
