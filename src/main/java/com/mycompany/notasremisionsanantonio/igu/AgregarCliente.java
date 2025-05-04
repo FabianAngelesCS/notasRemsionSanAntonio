@@ -4,9 +4,20 @@ package com.mycompany.notasremisionsanantonio.igu;
 import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
 
 public class AgregarCliente extends javax.swing.JFrame {
+    private Clientes ventanaClientes;
 
-    public AgregarCliente() {
+    public AgregarCliente(Clientes ventanaClientes) {
+        this.ventanaClientes = ventanaClientes;
         initComponents();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                ventanaClientes.setVisible(true); 
+            }
+        });
+        ventanaClientes.setVisible(true);
+        ventanaClientes.cargarClientes();
     }
 
     @SuppressWarnings("unchecked")
@@ -67,6 +78,12 @@ public class AgregarCliente extends javax.swing.JFrame {
             }
         });
 
+        nombreCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nombreClienteActionPerformed(evt);
+            }
+        });
+
         direccioncliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 direccionclienteActionPerformed(evt);
@@ -122,23 +139,25 @@ public class AgregarCliente extends javax.swing.JFrame {
                             .addComponent(telefonoCliente)
                             .addComponent(direccioncliente)
                             .addComponent(jScrollPane1)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(nombreCliente)
-                        .addGap(6, 6, 6)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(nombreCliente)
+                                .addGap(6, 6, 6))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(142, 142, 142)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 313, Short.MAX_VALUE)))))
                 .addGap(12, 12, 12))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(292, 292, 292)
-                .addComponent(jLabel1)
-                .addContainerGap(325, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
+                .addGap(34, 34, 34)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -154,7 +173,7 @@ public class AgregarCliente extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(guardarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(limpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -206,11 +225,12 @@ public class AgregarCliente extends javax.swing.JFrame {
         if (exito) {
             javax.swing.JOptionPane.showMessageDialog(this, "Cliente guardado correctamente.");
             limpiarActionPerformed(evt);
+            // mostrar la ventana Clientes de nuevo y cerrar esta
+            ventanaClientes.setVisible(true);
+            this.dispose();
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar el cliente.");
         }
-        
-        
     }//GEN-LAST:event_guardarClienteActionPerformed
 
     private void limpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarActionPerformed
@@ -223,6 +243,10 @@ public class AgregarCliente extends javax.swing.JFrame {
     private void direccionclienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_direccionclienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_direccionclienteActionPerformed
+
+    private void nombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreClienteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nombreClienteActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField direccioncliente;

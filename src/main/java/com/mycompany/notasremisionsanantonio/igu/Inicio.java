@@ -1,15 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.mycompany.notasremisionsanantonio.igu;
 
-
 public class Inicio extends javax.swing.JFrame {
-
-
+    private Inicio ventanaInicio;
+    
     public Inicio() {
+        this.ventanaInicio = null;
         initComponents();
+        configurarCierreVentana();
+    }
+    
+    public Inicio(Inicio ventanaInicio) {
+        this.ventanaInicio = ventanaInicio;
+        initComponents();
+        configurarCierreVentana();
+    }
+    
+    private void configurarCierreVentana() {
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (ventanaInicio != null) {
+                    ventanaInicio.setVisible(true);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -197,17 +213,18 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_verNotasActionPerformed
 
     private void clientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientesActionPerformed
-        Clientes pantallaCliente = new Clientes();
+        Clientes pantallaCliente = new Clientes(this);
         pantallaCliente.setVisible(true);
         pantallaCliente.setLocationRelativeTo(null);
+        this.setVisible(false);
     }//GEN-LAST:event_clientesActionPerformed
 
     private void crearNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearNotaActionPerformed
     
-        AgregarNota pantallaAgregarNota = new AgregarNota(this);  // Pasa "this" (Inicio)
+        AgregarNota pantallaAgregarNota = new AgregarNota(this); 
         pantallaAgregarNota.setVisible(true);
         pantallaAgregarNota.setLocationRelativeTo(null);
-        this.setVisible(false);  // Opcional: Oculta Inicio temporalmente
+        this.setVisible(false);  
     }//GEN-LAST:event_crearNotaActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
