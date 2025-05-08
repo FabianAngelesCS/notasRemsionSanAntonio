@@ -3,16 +3,23 @@ package com.mycompany.notasremisionsanantonio.logica;
 
 public class Producto {
     private int id_producto;
-    private String nombre;
+    private String producto;
     private int precio;
+    private String caracteristicas;
+    private int cantidad;
+    
 
     public Producto() {
+        
     }
 
-    public Producto(int id_producto, String nombre, int precio) {
+    public Producto(int id_producto, String producto, int precio, 
+            String caracteristicas, int cantidad) {
         this.id_producto = id_producto;
-        this.nombre = nombre;
+        this.producto = producto;
         this.precio = precio;
+        this.caracteristicas= caracteristicas;
+        this.cantidad = cantidad;
     }
 
     public int getId_producto() {
@@ -24,11 +31,11 @@ public class Producto {
     }
 
     public String getNombre() {
-        return nombre;
+        return producto;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombre(String producto) {
+        this.producto = producto;
     }
 
     public int getPrecio() {
@@ -37,5 +44,20 @@ public class Producto {
 
     public void setPrecio(int precio) {
         this.precio = precio;
+    }
+    
+    public String getCaracteristicas(){
+        return caracteristicas;
+    }
+    public void setCaracteristicas(String caracteristicas){
+        this.caracteristicas= caracteristicas;
+    }
+    
+    public int getCantidad(){
+        return cantidad;
+    }
+    
+    public void setCantidad(int cantidad){
+        this.cantidad = cantidad;
     }
 }

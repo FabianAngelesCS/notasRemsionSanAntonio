@@ -3,11 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.notasremisionsanantonio.igu;
+import com.mycompany.notasremisionsanantonio.persistencia.ProductoDAO;
 
-/**
- *
- * @author Tianj
- */
+
 public class AgregarProducto extends javax.swing.JFrame {
 
     /**
@@ -93,6 +91,11 @@ public class AgregarProducto extends javax.swing.JFrame {
         jLabel5.setText("CANTIDAD");
 
         guardarProducto.setText("GUARDAR");
+        guardarProducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarProductoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -188,6 +191,33 @@ public class AgregarProducto extends javax.swing.JFrame {
         precioProducto.setText("");
         cantidadProducto.setText("");
     }//GEN-LAST:event_limpiarProductoActionPerformed
+
+    private void guardarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarProductoActionPerformed
+        String producto=nombreProducto.getText();
+        String caracteristicas = caracteristicasProducto.getText();
+        String precio = precioProducto.getText();
+        String cantidad = cantidadProducto.getText();
+        
+        
+        
+        ProductoDAO productoDAO =new ProductoDAO();
+        boolean exito = productoDAO.agregarProducto(producto, caracteristicas,
+                Integer.parseInt(precio),
+                Integer.parseInt(cantidad));
+        
+        
+        
+        if (exito) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Producto guardado correctamente.");
+            limpiarProductoActionPerformed(evt);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar el producto.");
+        }
+        
+       
+        
+        
+    }//GEN-LAST:event_guardarProductoActionPerformed
 
     /**
      * @param args the command line arguments
