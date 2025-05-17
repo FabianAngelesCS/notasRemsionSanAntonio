@@ -1,13 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.mycompany.notasremisionsanantonio.igu;
+import com.mycompany.notasremisionsanantonio.persistencia.Conexion;
+
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class Productos extends javax.swing.JFrame {
 
     public Productos() {
         initComponents();
+        cargarProductosDesdeBD();
     }
 
     @SuppressWarnings("unchecked")
@@ -18,7 +23,7 @@ public class Productos extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaProductos = new javax.swing.JTable();
         agregarProducto = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -26,18 +31,25 @@ public class Productos extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("PRODUCTOS");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Nombre", "Descripción", "Precio", "Eliminar", "Editar"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tablaProductos);
+        if (tablaProductos.getColumnModel().getColumnCount() > 0) {
+            tablaProductos.getColumnModel().getColumn(0).setHeaderValue("Nombre");
+            tablaProductos.getColumnModel().getColumn(1).setHeaderValue("Descripción");
+            tablaProductos.getColumnModel().getColumn(2).setHeaderValue("Precio");
+            tablaProductos.getColumnModel().getColumn(3).setHeaderValue("Eliminar");
+            tablaProductos.getColumnModel().getColumn(4).setHeaderValue("Editar");
+        }
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -106,17 +118,41 @@ public class Productos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agregarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarProductoActionPerformed
-        AgregarProducto pantallaAgregarProducto = new AgregarProducto();
+        AgregarProducto pantallaAgregarProducto = new AgregarProducto(this);
         pantallaAgregarProducto.setVisible(true);
         pantallaAgregarProducto.setLocationRelativeTo(null);
+        this.setVisible(false);
     }//GEN-LAST:event_agregarProductoActionPerformed
 
+    public void cargarProductosDesdeBD() {
+        Conexion conexion = new Conexion();
+        try (Connection conn = conexion.conectar();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT nombre, caracteristicas, precio FROM producto")) {
+
+            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Nombre", "Descripción", "Precio", "Eliminar", "Editar"}, 0);
+
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String descripcion = rs.getString("caracteristicas");
+                double precio = rs.getDouble("precio");
+
+                modelo.addRow(new Object[]{nombre, descripcion, precio, "Eliminar", "Editar"});
+            }
+
+            tablaProductos.setModel(modelo);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage());
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregarProducto;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tablaProductos;
     // End of variables declaration//GEN-END:variables
 }
