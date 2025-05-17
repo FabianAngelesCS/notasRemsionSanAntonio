@@ -106,7 +106,9 @@ public class Productos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agregarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarProductoActionPerformed
-        // TODO add your handling code here:
+        AgregarProducto pantallaAgregarProducto = new AgregarProducto();
+        pantallaAgregarProducto.setVisible(true);
+        pantallaAgregarProducto.setLocationRelativeTo(null);
     }//GEN-LAST:event_agregarProductoActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
