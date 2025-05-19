@@ -83,5 +83,8 @@ public class Cliente {
     public void agregarNota(NotaRemision nota) {
         notas.add(nota);
     }
+    public String toString() {
+        return nombre;
+    }
 }
 

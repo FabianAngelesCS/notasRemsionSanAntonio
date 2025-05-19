@@ -221,9 +221,9 @@ public class Inicio extends javax.swing.JFrame {
 
     private void crearNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearNotaActionPerformed
     
-        AgregarNota pantallaAgregarNota = new AgregarNota(this); 
-        pantallaAgregarNota.setVisible(true);
-        pantallaAgregarNota.setLocationRelativeTo(null);
+        AgregarRemision pantallaAgregarRemision = new AgregarRemision(this); 
+        pantallaAgregarRemision.setVisible(true);
+        pantallaAgregarRemision.setLocationRelativeTo(null);
         this.setVisible(false);  
     }//GEN-LAST:event_crearNotaActionPerformed
 
