@@ -1,9 +1,14 @@
 
 package com.mycompany.notasremisionsanantonio.persistencia;
 
+import com.mycompany.notasremisionsanantonio.logica.Cliente;
+import com.mycompany.notasremisionsanantonio.logica.Producto;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ProductoDAO {
@@ -34,4 +39,34 @@ public class ProductoDAO {
         }
     }
     
+    public List<Producto> obtenerProductos() {
+        List<Producto> lista = new ArrayList<>();
+        Conexion conexion = new Conexion();
+        Connection conn = conexion.conectar();
+
+        if (conn == null) return lista;
+
+        String sql = "SELECT id_producto, nombre, caracteristicas, precio, cantidad, estatus FROM producto";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Producto c = new Producto();
+                c.setId_producto(rs.getInt("id_producto")); 
+                c.setNombre(rs.getString("nombre"));
+                c.setCaracteristicas(rs.getString("caracteristicas"));
+                c.setPrecio(rs.getInt("precio"));
+                c.setCantidad(rs.getInt("cantidad"));
+                c.setEstatus(rs.getBoolean("estatus")); 
+                lista.add(c);
+            }
+
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error al obtener productos: " + e.getMessage());
+        }
+        return lista;
+    }
 }

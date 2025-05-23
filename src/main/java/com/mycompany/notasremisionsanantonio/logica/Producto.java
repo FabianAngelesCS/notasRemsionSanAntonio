@@ -3,23 +3,25 @@ package com.mycompany.notasremisionsanantonio.logica;
 
 public class Producto {
     private int id_producto;
-    private String producto;
+    private String nombre;
     private int precio;
     private String caracteristicas;
     private int cantidad;
+    private boolean estatus;
     
 
     public Producto() {
         
     }
 
-    public Producto(int id_producto, String producto, int precio, 
-            String caracteristicas, int cantidad) {
+    public Producto(int id_producto, String nombre, int precio, 
+            String caracteristicas, int cantidad, boolean estatus) {
         this.id_producto = id_producto;
-        this.producto = producto;
+        this.nombre = nombre;
         this.precio = precio;
         this.caracteristicas= caracteristicas;
         this.cantidad = cantidad;
+        this.estatus = estatus;
     }
 
     public int getId_producto() {
@@ -31,11 +33,11 @@ public class Producto {
     }
 
     public String getNombre() {
-        return producto;
+        return nombre;
     }
 
-    public void setNombre(String producto) {
-        this.producto = producto;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public int getPrecio() {
@@ -45,19 +47,31 @@ public class Producto {
     public void setPrecio(int precio) {
         this.precio = precio;
     }
-    
-    public String getCaracteristicas(){
+
+    public String getCaracteristicas() {
         return caracteristicas;
     }
-    public void setCaracteristicas(String caracteristicas){
-        this.caracteristicas= caracteristicas;
+
+    public void setCaracteristicas(String caracteristicas) {
+        this.caracteristicas = caracteristicas;
     }
-    
-    public int getCantidad(){
+
+    public int getCantidad() {
         return cantidad;
     }
-    
-    public void setCantidad(int cantidad){
+
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public boolean isEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(boolean estatus) {
+        this.estatus = estatus;
+    }
+    public String toString() {
+        return nombre;
     }
 }

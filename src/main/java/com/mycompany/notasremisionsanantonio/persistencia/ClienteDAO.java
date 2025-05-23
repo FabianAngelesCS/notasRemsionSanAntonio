@@ -52,7 +52,7 @@ public class ClienteDAO {
 
             while (rs.next()) {
                 Cliente c = new Cliente();
-                c.setId_cliente(rs.getInt("id_cliente")); // <-- Esto estaba faltando
+                c.setId_cliente(rs.getInt("id_cliente")); 
                 c.setNombre(rs.getString("nombre"));
                 c.setTelefono(rs.getString("telefono"));
                 c.setDireccion(rs.getString("direccion"));
@@ -102,6 +102,6 @@ public class ClienteDAO {
     }
 
     private void cargarClientes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 }
