@@ -203,7 +203,7 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_salirActionPerformed
 
     private void productosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productosActionPerformed
-        Productos pantallaProductos = new Productos();
+        Productos pantallaProductos = new Productos(this);
         pantallaProductos.setVisible(true);
         pantallaProductos.setLocationRelativeTo(null);
     }//GEN-LAST:event_productosActionPerformed

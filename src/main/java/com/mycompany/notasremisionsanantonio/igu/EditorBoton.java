@@ -11,7 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
-public class EditorBoton extends AbstractCellEditor implements TableCellEditor {
+/*public class EditorBoton extends AbstractCellEditor implements TableCellEditor {
 
     private final JButton boton = new JButton();
     private final JTable tabla;
@@ -83,4 +83,4 @@ public class EditorBoton extends AbstractCellEditor implements TableCellEditor {
         }
         return null;
     }
-}
+}*/

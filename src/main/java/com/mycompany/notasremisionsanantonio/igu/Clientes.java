@@ -1,10 +1,19 @@
 
 package com.mycompany.notasremisionsanantonio.igu;
 
-import com.mycompany.notasremisionsanantonio.logica.Cliente;
-import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
-import java.util.List;
+///import com.mycompany.notasremisionsanantonio.logica.Cliente;
+//import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
+//import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import com.mycompany.notasremisionsanantonio.igu.EstadoBoton;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import com.mycompany.notasremisionsanantonio.persistencia.Conexion;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JCheckBox;
 
 public class Clientes extends javax.swing.JFrame {
     private Inicio ventanaInicio;
@@ -167,41 +176,47 @@ public class Clientes extends javax.swing.JFrame {
     }//GEN-LAST:event_agregarClienteActionPerformed
 
     public void cargarClientes() {
-        DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("id_cliente"); 
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Teléfono");
-        modelo.addColumn("Dirección");
-        modelo.addColumn("Observaciones");
-        modelo.addColumn("Acciones");
+        Conexion conexion = new Conexion();
+            try (Connection conn = conexion.conectar();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT nombre, telefono, direccion, observaciones, estatus FROM cliente")) {
+            
+            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Nombre", "Telefono", "Direccion", "Observaciones", "Estatus", "Editar"}, 0){
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                // Solo las columnas de botones son editables
+                    return column == 4 || column == 5;
+            }
+                @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 4) return Boolean.class; // Para el estado Activo/Inactivo
+                return super.getColumnClass(columnIndex);
+            }
+            };
+            
+            while (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String telefono = rs.getString("telefono");
+                String direccion = rs.getString("direccion");
+                String observaciones = rs.getString("observaciones");
+                boolean estatus = rs.getBoolean("estatus");
 
-        ClienteDAO dao = new ClienteDAO();
-        List<Cliente> listaClientes = (List<Cliente>) dao.obtenerClientes();
+                modelo.addRow(new Object[]{nombre, telefono, direccion, observaciones,estatus, "Editar"});
+            }
 
-        for (Cliente c : listaClientes) {
-            modelo.addRow(new Object[] {
-                c.getId_cliente(), 
-                c.getNombre(),
-                c.getTelefono(),
-                c.getDireccion(),
-                c.getObservaciones(),
-                c.isEstatus() ? "Desactivar" : "Activar"
-            });
+                TablaClientes.setModel(modelo);
+                
+                TableColumn estadoColumn = TablaClientes.getColumnModel().getColumn(4);
+                estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
+                estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "cliente", "id_cliente"));
+
+        }catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + e.getMessage());
         }
-
-        TablaClientes.setModel(modelo);
-
-        // Ocultar columna del ID visualmente
-        TablaClientes.getColumnModel().getColumn(0).setMinWidth(0);
-        TablaClientes.getColumnModel().getColumn(0).setMaxWidth(0);
-        TablaClientes.getColumnModel().getColumn(0).setWidth(0);
-
-        // Asignar renderer y editor al botón
-        TablaClientes.getColumn("Acciones").setCellRenderer(new RenderBoton());
-        TablaClientes.getColumn("Acciones").setCellEditor(new EditorBoton(TablaClientes, listaClientes, this));
+        
     }
     
-    public void actualizarEstatusEnTabla(int idCliente, boolean nuevoEstatus) {
+    /*public void actualizarEstatusEnTabla(int idCliente, boolean nuevoEstatus) {
         for (int i = 0; i < TablaClientes.getRowCount(); i++) {
             int idFila = Integer.parseInt(TablaClientes.getValueAt(i, 0).toString());
             if (idFila == idCliente) {
@@ -213,7 +228,7 @@ public class Clientes extends javax.swing.JFrame {
                 break;
             }
         }
-    }
+    }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TablaClientes;
