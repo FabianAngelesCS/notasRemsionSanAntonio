@@ -177,43 +177,50 @@ public class Clientes extends javax.swing.JFrame {
 
     public void cargarClientes() {
         Conexion conexion = new Conexion();
-            try (Connection conn = conexion.conectar();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT nombre, telefono, direccion, observaciones, estatus FROM cliente")) {
-            
-            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Nombre", "Telefono", "Direccion", "Observaciones", "Estatus", "Editar"}, 0){
+        try (Connection conn = conexion.conectar();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT id_cliente, nombre, telefono, direccion, observaciones, estatus FROM cliente")) {
+
+            DefaultTableModel modelo = new DefaultTableModel(
+                new Object[]{"ID", "Nombre", "Telefono", "Direccion", "Observaciones", "Estatus", "Editar"}, 0
+            ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                // Solo las columnas de botones son editables
-                    return column == 4 || column == 5;
-            }
+                    return column == 5 || column == 6;
+                }
+
                 @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 4) return Boolean.class; // Para el estado Activo/Inactivo
-                return super.getColumnClass(columnIndex);
-            }
+                public Class<?> getColumnClass(int columnIndex) {
+                    if (columnIndex == 5) return Boolean.class;
+                    return super.getColumnClass(columnIndex);
+                }
             };
-            
+
             while (rs.next()) {
+                int id_cliente = rs.getInt("id_cliente");
                 String nombre = rs.getString("nombre");
                 String telefono = rs.getString("telefono");
                 String direccion = rs.getString("direccion");
                 String observaciones = rs.getString("observaciones");
                 boolean estatus = rs.getBoolean("estatus");
 
-                modelo.addRow(new Object[]{nombre, telefono, direccion, observaciones,estatus, "Editar"});
+                modelo.addRow(new Object[]{id_cliente, nombre, telefono, direccion, observaciones, estatus, "Editar"});
             }
 
-                TablaClientes.setModel(modelo);
-                
-                TableColumn estadoColumn = TablaClientes.getColumnModel().getColumn(4);
-                estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
-                estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "cliente", "id_cliente"));
+            TablaClientes.setModel(modelo);
 
-        }catch (Exception e) {
+            // Ocultar columna ID (columna 0)
+            TablaClientes.getColumnModel().getColumn(0).setMinWidth(0);
+            TablaClientes.getColumnModel().getColumn(0).setMaxWidth(0);
+            TablaClientes.getColumnModel().getColumn(0).setWidth(0);
+
+            TableColumn estadoColumn = TablaClientes.getColumnModel().getColumn(5); 
+            estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
+            estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "cliente", "id_cliente"));
+
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + e.getMessage());
         }
-        
     }
     
     /*public void actualizarEstatusEnTabla(int idCliente, boolean nuevoEstatus) {

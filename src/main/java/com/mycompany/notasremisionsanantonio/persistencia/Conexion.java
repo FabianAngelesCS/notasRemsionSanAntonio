@@ -9,6 +9,10 @@ public class Conexion {
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
+    static Connection getConexion() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     public Connection conectar() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);

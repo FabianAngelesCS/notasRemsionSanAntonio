@@ -137,35 +137,40 @@ public class Productos extends javax.swing.JFrame {
         Conexion conexion = new Conexion();
         try (Connection conn = conexion.conectar();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT nombre, caracteristicas, precio, estatus FROM producto")) {
+             ResultSet rs = stmt.executeQuery("SELECT id_producto, nombre, caracteristicas, precio, estatus FROM producto")) {
 
-            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Nombre", "Descripción", "Precio", "Estatus", "Editar"}, 0){
+            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"ID", "Nombre", "Descripción", "Precio", "Estatus", "Editar"}, 0){
                 @Override
                 public boolean isCellEditable(int row, int column) {
                 // Solo las columnas de botones son editables
-                    return column == 3 || column == 4;
+                    return column == 4 || column == 5;
             }
               @Override
             public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 3) return Boolean.class; // Para el estado Activo/Inactivo
+                if (columnIndex == 4) return Boolean.class; 
                 return super.getColumnClass(columnIndex);
             }
             };
 
             while (rs.next()) {
+                int id_producto = rs.getInt("id_producto");
                 String nombre = rs.getString("nombre");
                 String descripcion = rs.getString("caracteristicas");
                 double precio = rs.getDouble("precio");
                 boolean estatus = rs.getBoolean("estatus");
 
-                modelo.addRow(new Object[]{nombre, descripcion, precio, estatus, "Editar"});
+                modelo.addRow(new Object[]{id_producto, nombre, descripcion, precio, estatus, "Editar"});
             }
 
             tablaProductos.setModel(modelo);
             
-            TableColumn estadoColumn = tablaProductos.getColumnModel().getColumn(3);
+            tablaProductos.getColumnModel().getColumn(0).setMinWidth(0);
+            tablaProductos.getColumnModel().getColumn(0).setMaxWidth(0);
+            tablaProductos.getColumnModel().getColumn(0).setWidth(0);
+            
+            TableColumn estadoColumn = tablaProductos.getColumnModel().getColumn(4);
             estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
-            estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "producto", "nombre"));
+            estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "producto", "id_producto"));
                            
 
         } catch (Exception e) {

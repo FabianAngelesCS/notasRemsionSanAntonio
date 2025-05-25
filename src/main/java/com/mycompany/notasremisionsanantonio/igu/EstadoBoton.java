@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.notasremisionsanantonio.igu;
 import com.mycompany.notasremisionsanantonio.persistencia.Conexion;
 
@@ -41,7 +37,7 @@ public class EstadoBoton {
     public static class Editor extends DefaultCellEditor {
         private JButton button;
         private boolean estadoActual;
-        private String idRegistro;
+        private int idRegistro;
         private JTable tabla;
         private String nombreTabla; // "producto", "cliente", etc.
         private String nombreCampoID; // "nombre", "id_cliente", etc.
@@ -65,7 +61,7 @@ public class EstadoBoton {
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
             estadoActual = (Boolean) value;
-            idRegistro = (String) table.getValueAt(row, 0); // Asume que el ID está en la columna 0
+            idRegistro = (Integer) table.getValueAt(row, 0);
             tabla = table;
 
             button.setText(estadoActual ? "Desactivar" : "Activar");
@@ -81,20 +77,24 @@ public class EstadoBoton {
 
         private void cambiarEstadoRegistro() {
             boolean nuevoEstado = !estadoActual;
-            
+            System.out.println("UPDATE " + nombreTabla + " SET estatus = " + nuevoEstado +
+                   " WHERE " + nombreCampoID + " = " + idRegistro);
+
             try {Conexion conexion = new Conexion();
                 Connection conn = conexion.conectar();
                 java.sql.PreparedStatement ps = conn.prepareStatement(
                     "UPDATE " + nombreTabla + " SET estatus = ? WHERE " + nombreCampoID + " = ?");
                 ps.setBoolean(1, nuevoEstado);
-                ps.setString(2, idRegistro);
+                ps.setInt(2, idRegistro);
                 ps.executeUpdate();
                 conn.close();
                 
                 // Actualizar el modelo de la tabla
                 ((javax.swing.table.DefaultTableModel)tabla.getModel()).setValueAt(nuevoEstado, tabla.getSelectedRow(), 3);
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(button, "Error al actualizar estado: " + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
     }
