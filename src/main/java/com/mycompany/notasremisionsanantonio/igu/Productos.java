@@ -7,14 +7,34 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.notasremisionsanantonio.igu.EstadoBoton;
+//import javax.swing.table.TableCellEditor;
+//import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.JCheckBox;
+
+
+
 
 public class Productos extends javax.swing.JFrame {
-
-    public Productos() {
+    private Inicio ventanaInicio;
+    
+    public Productos(Inicio ventanaInicio) {
+        this.ventanaInicio = ventanaInicio;
         initComponents();
         cargarProductosDesdeBD();
+        configurarCierreVentana();
     }
-
+    
+   private void configurarCierreVentana() {
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                ventanaInicio.setVisible(true);
+            }
+        });
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -104,6 +124,8 @@ public class Productos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+     
+    
     private void agregarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarProductoActionPerformed
         AgregarProducto pantallaAgregarProducto = new AgregarProducto(this);
         pantallaAgregarProducto.setVisible(true);
@@ -115,19 +137,36 @@ public class Productos extends javax.swing.JFrame {
         Conexion conexion = new Conexion();
         try (Connection conn = conexion.conectar();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT nombre, caracteristicas, precio FROM producto")) {
+             ResultSet rs = stmt.executeQuery("SELECT nombre, caracteristicas, precio, estatus FROM producto")) {
 
-            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Nombre", "Descripción", "Precio", "Eliminar", "Editar"}, 0);
+            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"Nombre", "Descripción", "Precio", "Estatus", "Editar"}, 0){
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                // Solo las columnas de botones son editables
+                    return column == 3 || column == 4;
+            }
+              @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 3) return Boolean.class; // Para el estado Activo/Inactivo
+                return super.getColumnClass(columnIndex);
+            }
+            };
 
             while (rs.next()) {
                 String nombre = rs.getString("nombre");
                 String descripcion = rs.getString("caracteristicas");
                 double precio = rs.getDouble("precio");
+                boolean estatus = rs.getBoolean("estatus");
 
-                modelo.addRow(new Object[]{nombre, descripcion, precio, "Eliminar", "Editar"});
+                modelo.addRow(new Object[]{nombre, descripcion, precio, estatus, "Editar"});
             }
 
             tablaProductos.setModel(modelo);
+            
+            TableColumn estadoColumn = tablaProductos.getColumnModel().getColumn(3);
+            estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
+            estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "producto", "nombre"));
+                           
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage());
