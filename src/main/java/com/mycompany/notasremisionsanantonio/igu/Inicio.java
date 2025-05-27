@@ -206,10 +206,14 @@ public class Inicio extends javax.swing.JFrame {
         Productos pantallaProductos = new Productos(this);
         pantallaProductos.setVisible(true);
         pantallaProductos.setLocationRelativeTo(null);
+        this.setVisible(false);
     }//GEN-LAST:event_productosActionPerformed
 
     private void verNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verNotasActionPerformed
-        // TODO add your handling code here:
+        VerNotasRemision  pantallaVerNotas = new VerNotasRemision(this);
+        pantallaVerNotas.setVisible(true);
+        pantallaVerNotas.setLocationRelativeTo(null);
+        this.setVisible(false);
     }//GEN-LAST:event_verNotasActionPerformed
 
     private void clientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientesActionPerformed

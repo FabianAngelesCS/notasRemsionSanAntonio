@@ -12,7 +12,7 @@ public class RemisionDAO {
     public int insertarRemision(int idCliente, Date fecha, String folio) {
         int idGenerado = -1;
         String sql = "INSERT INTO remision (id_cliente, fecha, folio) VALUES (?, ?, ?)";
-        try (Connection conn = Conexion.getConexion();
+        try (Connection conn = new Conexion().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, idCliente);
@@ -32,7 +32,7 @@ public class RemisionDAO {
 
     public void insertarDetalleRemision(int idRemision, int idProducto, int cantidad, double precio) {
         String sql = "INSERT INTO detalle_remision (id_remision, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
-        try (Connection conn = Conexion.getConexion();
+        try (Connection conn = new Conexion().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idRemision);

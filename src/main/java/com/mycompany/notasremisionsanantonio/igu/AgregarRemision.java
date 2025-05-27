@@ -3,6 +3,7 @@ import com.mycompany.notasremisionsanantonio.logica.Cliente;
 import com.mycompany.notasremisionsanantonio.logica.Producto;
 import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
 import com.mycompany.notasremisionsanantonio.persistencia.ProductoDAO;
+import com.mycompany.notasremisionsanantonio.persistencia.RemisionDAO;
 import java.util.List;
 
 import com.toedter.calendar.JDateChooser;
@@ -170,6 +171,12 @@ public class AgregarRemision extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel8.setText("Cantidad:");
+
+        cantidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cantidadActionPerformed(evt);
+            }
+        });
 
         agregarOrden.setBackground(new java.awt.Color(0, 204, 204));
         agregarOrden.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -406,8 +413,52 @@ public class AgregarRemision extends javax.swing.JFrame {
     }//GEN-LAST:event_agregarOrdenActionPerformed
 
     private void AgregarNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AgregarNotaActionPerformed
-        // TODO add your handling code here:
+        Cliente cliente = (Cliente) jComboBox1.getSelectedItem();
+        if (cliente == null) {
+            JOptionPane.showMessageDialog(this, "Selecciona un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Date fecha = dateChooser.getDate();
+        if (fecha == null) {
+            JOptionPane.showMessageDialog(this, "Selecciona una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DefaultTableModel model = (DefaultTableModel) pedidoCompleto.getModel();
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Agrega al menos un producto a la nota.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String folio = generarFolio(); // Puedes implementar un generador único
+        RemisionDAO remisionDAO = new RemisionDAO();
+        int idRemision = remisionDAO.insertarRemision(cliente.getId_cliente(), fecha, folio);
+
+        if (idRemision == -1) {
+            JOptionPane.showMessageDialog(this, "Error al guardar la remisión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            int idProducto = (int) model.getValueAt(i, 0);
+            int cantidad = (int) model.getValueAt(i, 2);
+            double precioUnitario = (double) model.getValueAt(i, 3);
+
+            remisionDAO.insertarDetalleRemision(idRemision, idProducto, cantidad, precioUnitario);
+        }
+
+        JOptionPane.showMessageDialog(this, "Nota de remisión agregada correctamente con folio: " + folio);
+        model.setRowCount(0);
     }//GEN-LAST:event_AgregarNotaActionPerformed
+
+    private void cantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cantidadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cantidadActionPerformed
+    
+    private String generarFolio() {
+        return "FOL-" + System.currentTimeMillis();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AgregarNota;
@@ -437,4 +488,5 @@ public class AgregarRemision extends javax.swing.JFrame {
     private javax.swing.JTable pedidoCompleto;
     private javax.swing.JTextField precio;
     // End of variables declaration//GEN-END:variables
+
 }

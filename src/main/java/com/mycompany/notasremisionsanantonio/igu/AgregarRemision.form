@@ -286,6 +286,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="cantidad">
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cantidadActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="precio">
         </Component>
