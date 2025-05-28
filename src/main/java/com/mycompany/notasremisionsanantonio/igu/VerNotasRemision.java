@@ -54,8 +54,9 @@ public class VerNotasRemision extends javax.swing.JFrame {
                 String cliente = rs.getString("nombre");
                 String fecha = rs.getString("fecha");
                 double total = rs.getDouble("total");
+                int id_remision = rs.getInt("id_remision");
 
-                modelo.addRow(new Object[]{folio, cliente, fecha, total, "Eliminar", "Ver PDF"});
+                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total, "Eliminar", "Ver PDF"});
             }
 
         } catch (SQLException ex) {
@@ -72,6 +73,10 @@ public class VerNotasRemision extends javax.swing.JFrame {
 
         notasPendientes.getColumn("Ver PDF").setCellRenderer(new VerPDFButtonRenderer());
         notasPendientes.getColumn("Ver PDF").setCellEditor(new VerPDFButtonEditor(new JCheckBox()));
+        
+        notasPendientes.getColumnModel().getColumn(0).setMinWidth(0);
+        notasPendientes.getColumnModel().getColumn(0).setMaxWidth(0);
+        notasPendientes.getColumnModel().getColumn(0).setWidth(0);
 
     }
 
@@ -100,15 +105,7 @@ public class VerNotasRemision extends javax.swing.JFrame {
             new String [] {
                 "No. Folio", "Cliente", "Fecha", "Importe", "Eliminar", "Ver PDF"
             }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        ));
         jScrollPane1.setViewportView(notasPendientes);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

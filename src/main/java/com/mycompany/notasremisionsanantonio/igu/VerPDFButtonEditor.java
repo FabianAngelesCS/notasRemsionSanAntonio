@@ -1,14 +1,16 @@
 package com.mycompany.notasremisionsanantonio.igu;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.mycompany.notasremisionsanantonio.logica.GeneradorPDF;
+
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 
 public class VerPDFButtonEditor extends DefaultCellEditor {
     private JButton button;
     private boolean isPushed;
+    private JTable table;
 
     public VerPDFButtonEditor(JCheckBox checkBox) {
         super(checkBox);
@@ -18,14 +20,25 @@ public class VerPDFButtonEditor extends DefaultCellEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 fireEditingStopped();
-                JOptionPane.showMessageDialog(button, "Aquí iría la lógica para abrir el PDF");
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    try {
+                        // Suponiendo que en la columna 0 tienes el id_remision
+                        int idRemision = Integer.parseInt(table.getValueAt(selectedRow, 0).toString());
+                        GeneradorPDF.generarYMostrarPDF(idRemision);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(button, "Error al obtener el ID de remisión: " + ex.getMessage());
+                    }
+                }
             }
         });
     }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column) {
+                                                  boolean isSelected, int row, int column) {
+        this.table = table;
         isPushed = true;
         return button;
     }
