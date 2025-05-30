@@ -2,96 +2,114 @@ package com.mycompany.notasremisionsanantonio.logica;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
-import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.mycompany.notasremisionsanantonio.persistencia.Conexion;
 
-import java.io.FileOutputStream;
+import java.awt.Desktop;
+import java.io.*;
+import java.nio.file.*;
 import java.sql.*;
 
 public class GeneradorPDF {
 
-    public static void generarYMostrarPDF(int idRemision) {
+    // 1. Método principal que genera el PDF y devuelve la ruta del archivo
+    public static String generarPDF(int idRemision) throws Exception {
+        String ruta = "pdfs/remision_" + idRemision + ".pdf";
+        File archivoPDF = new File(ruta);
+
+        Document documento = new Document(PageSize.LETTER, 36, 36, 36, 36);
+        PdfWriter.getInstance(documento, new FileOutputStream(archivoPDF));
+        documento.open();
+
+        PdfPTable layoutTabla = new PdfPTable(3);
+        layoutTabla.setWidthPercentage(100);
+        layoutTabla.setSpacingBefore(10);
+        layoutTabla.setSpacingAfter(10);
+        layoutTabla.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+        layoutTabla.setWidths(new float[]{1f, 0.05f, 1f});
+
+        PdfPCell nota1 = new PdfPCell(generarNota(idRemision));
+        PdfPCell espacio = new PdfPCell();
+        PdfPCell nota2 = new PdfPCell(generarNota(idRemision));
+
+        nota1.setBorder(PdfPCell.NO_BORDER);
+        nota2.setBorder(PdfPCell.NO_BORDER);
+        espacio.setBorder(PdfPCell.NO_BORDER);
+
+        layoutTabla.addCell(nota1);
+        layoutTabla.addCell(espacio);
+        layoutTabla.addCell(nota2);
+
+        documento.add(layoutTabla);
+        documento.close();
+
+        return ruta;
+    }
+
+    // 2. Método para mostrar el PDF (abrirlo con visor predeterminado)
+    public static void mostrarPDF(int idRemision) {
         try {
-            Document documento = new Document(PageSize.LETTER, 36, 36, 36, 36); 
-            String ruta = "pdfs/remision_" + idRemision + ".pdf";
-            PdfWriter.getInstance(documento, new FileOutputStream(ruta));
-            documento.open();
-            Font fuenteFila = FontFactory.getFont(FontFactory.HELVETICA, 7);  
-
-
-            // Tabla principal de 2 columnas
-            PdfPTable layoutTabla = new PdfPTable(2);
-            layoutTabla.setWidthPercentage(100);
-            layoutTabla.setSpacingBefore(10);
-            layoutTabla.setSpacingAfter(10);
-            layoutTabla.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
-            layoutTabla.setWidths(new float[]{1f, 1f});
-
-            // Generar las 3 notas
-            PdfPCell nota1 = new PdfPCell(generarNota(idRemision));
-            PdfPCell nota2 = new PdfPCell(generarNota(idRemision));
-            PdfPCell nota3 = new PdfPCell(generarNota(idRemision));
-            PdfPCell vacio = new PdfPCell();
-
-            // Quitar bordes
-            nota1.setBorder(PdfPCell.NO_BORDER);
-            nota2.setBorder(PdfPCell.NO_BORDER);
-            nota3.setBorder(PdfPCell.NO_BORDER);
-            vacio.setBorder(PdfPCell.NO_BORDER);
-
-            // Fila 1: copia 1 y 2
-            layoutTabla.addCell(nota1);
-            layoutTabla.addCell(nota2);
-
-            // Fila 2: copia 3 y vacío
-            layoutTabla.addCell(nota3);
-            layoutTabla.addCell(vacio);
-
-            documento.add(layoutTabla);
-
-            documento.close();
-            java.awt.Desktop.getDesktop().open(new java.io.File(ruta));
-
+            String ruta = generarPDF(idRemision);
+            Path archivoTemporal = Files.createTempFile("remision_temp_", ".pdf");
+            Files.copy(Paths.get(ruta), archivoTemporal, StandardCopyOption.REPLACE_EXISTING);
+            Desktop.getDesktop().open(archivoTemporal.toFile());
         } catch (Exception e) {
             e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(null, "Error al generar el PDF: " + e.getMessage());
+            javax.swing.JOptionPane.showMessageDialog(null, "Error al mostrar el PDF: " + e.getMessage());
         }
     }
-    
-    // Métodos auxiliares para formato de celdas
+
+    // 3. Método para imprimir directamente el PDF
+    public static void imprimirPDF(int idRemision) {
+        try {
+            String ruta = generarPDF(idRemision);
+            Desktop.getDesktop().print(new File(ruta));
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(null, "Error al imprimir el PDF: " + e.getMessage());
+        }
+    }
+
+    // ---------------- MÉTODOS AUXILIARES ----------------
+
     private static PdfPCell getCell(String text, int alignment) {
-        Font fuenteCabecera = FontFactory.getFont(FontFactory.HELVETICA, 8); // tamaño reducido
+        Font fuenteCabecera = FontFactory.getFont(FontFactory.HELVETICA, 11);
         PdfPCell cell = new PdfPCell(new Phrase(text, fuenteCabecera));
         cell.setPadding(5);
         cell.setHorizontalAlignment(alignment);
         cell.setBorder(PdfPCell.NO_BORDER);
         return cell;
-}
+    }
 
     private static PdfPCell celdaEncabezado(String texto) {
-        PdfPCell cell = new PdfPCell(new Phrase(texto, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8)));
+        PdfPCell cell = new PdfPCell(new Phrase(texto, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
         cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
         return cell;
     }
+
+    private static PdfPCell celdaSinBorde(Element e) {
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(e);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+
     private static PdfPTable generarNota(int idRemision) throws Exception {
         PdfPTable contenedor = new PdfPTable(1);
         contenedor.setWidthPercentage(100);
-        Font fuenteFila = FontFactory.getFont(FontFactory.HELVETICA, 8);  
+        Font fuenteFila = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
-        // Título
         Paragraph encabezado = new Paragraph("PLÁSTICOS Y ALUMINIO SAN ANTONIO",
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10));
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11));
         encabezado.setAlignment(Element.ALIGN_CENTER);
         contenedor.addCell(celdaSinBorde(encabezado));
 
         Paragraph subtitulo = new Paragraph("NOTA DE REMISIÓN",
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9));
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10));
         subtitulo.setAlignment(Element.ALIGN_CENTER);
         contenedor.addCell(celdaSinBorde(subtitulo));
         contenedor.addCell(celdaSinBorde(new Paragraph(" ")));
 
-        // Datos de cabecera
         String folio = "", fecha = "", cliente = "";
         try (Connection conn = new Conexion().conectar();
              PreparedStatement stmt = conn.prepareStatement("""
@@ -117,7 +135,6 @@ public class GeneradorPDF {
         cabecera.addCell(getCell("", PdfPCell.ALIGN_RIGHT));
         contenedor.addCell(celdaSinBorde(cabecera));
 
-        // Tabla de productos
         PdfPTable tabla = new PdfPTable(4);
         tabla.setWidthPercentage(100);
         tabla.setWidths(new int[]{4, 2, 2, 2});
@@ -153,7 +170,7 @@ public class GeneradorPDF {
         contenedor.addCell(celdaSinBorde(tabla));
 
         Paragraph totalParrafo = new Paragraph("Total: $" + String.format("%.2f", total),
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD,9));
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9));
         totalParrafo.setAlignment(Element.ALIGN_RIGHT);
         contenedor.addCell(celdaSinBorde(totalParrafo));
 
@@ -161,21 +178,10 @@ public class GeneradorPDF {
                 "Me comprometo a pagar el monto de esta nota en su totalidad. Firma del cliente: _________________________",
                 FontFactory.getFont(FontFactory.HELVETICA, 9));
         contenedor.addCell(celdaSinBorde(leyenda));
-        
-        contenedor.addCell(celdaSinBorde(new Paragraph(" ")));
-        contenedor.addCell(celdaSinBorde(new Paragraph(" ")));
 
         return contenedor;
     }
-    private static PdfPCell celdaSinBorde(Element e) {
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(e);
-        cell.setBorder(PdfPCell.NO_BORDER);
-        return cell;
-    }
-
 }
-
 
 
 

@@ -23,12 +23,11 @@ public class VerPDFButtonEditor extends DefaultCellEditor {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
                     try {
-                        // Suponiendo que en la columna 0 tienes el id_remision
                         int idRemision = Integer.parseInt(table.getValueAt(selectedRow, 0).toString());
-                        GeneradorPDF.generarYMostrarPDF(idRemision);
+                        GeneradorPDF.mostrarPDF(idRemision); // ← AQUÍ el cambio
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        JOptionPane.showMessageDialog(button, "Error al obtener el ID de remisión: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(button, "Error al mostrar el PDF: " + ex.getMessage());
                     }
                 }
             }
