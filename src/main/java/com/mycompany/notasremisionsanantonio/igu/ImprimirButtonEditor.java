@@ -1,10 +1,12 @@
 package com.mycompany.notasremisionsanantonio.igu;
 import com.mycompany.notasremisionsanantonio.logica.GeneradorPDF;
+import com.mycompany.notasremisionsanantonio.persistencia.RemisionDAO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 
 public class ImprimirButtonEditor extends DefaultCellEditor {
@@ -33,8 +35,12 @@ public class ImprimirButtonEditor extends DefaultCellEditor {
             isPushed = false;
             int idRemision = (int) table.getValueAt(table.getSelectedRow(), 0);
             try {
-                String ruta = GeneradorPDF.generarPDF(idRemision); // Cambia tu método para que retorne la ruta
+                String ruta = GeneradorPDF.generarPDF(idRemision); 
                 Desktop.getDesktop().print(new File(ruta));
+                RemisionDAO dao = new RemisionDAO();
+                dao.marcarComoImpresa(idRemision);
+               
+                ((DefaultTableModel) table.getModel()).removeRow(table.getSelectedRow());
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(button, "No se pudo imprimir el PDF: " + ex.getMessage());

@@ -24,7 +24,7 @@ public class VerPDFButtonEditor extends DefaultCellEditor {
                 if (selectedRow >= 0) {
                     try {
                         int idRemision = Integer.parseInt(table.getValueAt(selectedRow, 0).toString());
-                        GeneradorPDF.mostrarPDF(idRemision); // ← AQUÍ el cambio
+                        GeneradorPDF.mostrarPDF(idRemision); 
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(button, "Error al mostrar el PDF: " + ex.getMessage());

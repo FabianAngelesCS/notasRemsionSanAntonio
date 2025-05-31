@@ -44,5 +44,25 @@ public class RemisionDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }   
+    
+    public void marcarComoImpresa(int idRemision) {
+            String sql = "UPDATE remision SET impresa = 1 WHERE id_remision = ?";
+
+            try (Connection conn = new Conexion().conectar();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setInt(1, idRemision);
+                int filasAfectadas = stmt.executeUpdate();
+
+                if (filasAfectadas == 0) {
+                    throw new SQLException("No se encontró la remisión con ID: " + idRemision);
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                javax.swing.JOptionPane.showMessageDialog(null,
+                    "Error al marcar como impresa: " + ex.getMessage());
+            }
     }
 }
