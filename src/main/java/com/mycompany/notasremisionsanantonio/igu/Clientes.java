@@ -179,7 +179,7 @@ public class Clientes extends javax.swing.JFrame {
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return column == 5 || column == 6;
+                    return column == 5 || column == 7;
                 }
 
                 @Override
@@ -210,6 +210,9 @@ public class Clientes extends javax.swing.JFrame {
             TableColumn estadoColumn = TablaClientes.getColumnModel().getColumn(5); 
             estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
             estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "cliente", "id_cliente"));
+            
+            TablaClientes.getColumnModel().getColumn(7).setCellRenderer(new BotonVerCredito(TablaClientes));
+            TablaClientes.getColumnModel().getColumn(7).setCellEditor(new BotonVerCredito(TablaClientes));
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + e.getMessage());
