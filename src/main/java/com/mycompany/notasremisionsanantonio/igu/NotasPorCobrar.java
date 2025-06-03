@@ -1,20 +1,32 @@
 
 package com.mycompany.notasremisionsanantonio.igu;
 
+import com.mycompany.notasremisionsanantonio.persistencia.Conexion;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class NotasPorCobrar extends javax.swing.JFrame {
     
     private int idCliente;
     private JFrame ventanaClientes;
     
-    public NotasPorCobrar(int idCliente, JFrame ventanaClientes) {
+    public NotasPorCobrar(int idCliente, String nombre, JFrame ventanaClientes) {
         initComponents();
+
         this.idCliente = idCliente;
         this.ventanaClientes = ventanaClientes;
 
-        this.ventanaClientes.setVisible(false);
+        nombreCliente.setText(nombre);
 
+        cargarNotasRemision(idCliente);
+
+        this.ventanaClientes.setVisible(false);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -25,9 +37,56 @@ public class NotasPorCobrar extends javax.swing.JFrame {
         });
     }
 
-    public void setNombreCliente(String nombre) {
-        this.idCliente = idCliente;
-        nombreCliente.setText(nombre);
+    private void cargarNotasRemision(int idCliente) {
+        DefaultTableModel modelo = (DefaultTableModel) remisionesPendientes.getModel();
+        modelo.setRowCount(0);
+
+        String sql = """
+            SELECT r.id_remision, r.folio, r.fecha, c.nombre,
+                   SUM(dr.cantidad * dr.precio_unitario) AS total
+            FROM remision r
+            JOIN cliente c ON r.id_cliente = c.id_cliente
+            JOIN detalle_remision dr ON r.id_remision = dr.id_remision
+            WHERE r.pagada = 0 AND r.id_cliente = ?
+            GROUP BY r.id_remision, r.folio, r.fecha, c.nombre
+        """;
+
+        try (Connection conn = new Conexion().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCliente); 
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String folio = rs.getString("folio");
+                String cliente = rs.getString("nombre");
+                String fecha = rs.getString("fecha");
+                double total = rs.getDouble("total");
+                int id_remision = rs.getInt("id_remision");
+
+                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total, "Eliminar", "Abonar"});
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar remisiones no impresas.");
+        }
+
+        configurarBotonesTabla();
+    }
+
+    private void configurarBotonesTabla() {
+        remisionesPendientes.getColumn("Eliminar").setCellRenderer(new EliminarButtonRenderer());
+        remisionesPendientes.getColumn("Eliminar").setCellEditor(new EliminarButtonEditor(new JCheckBox(), remisionesPendientes));
+        
+        remisionesPendientes.getColumn("Abonar").setCellRenderer(new AbonarButtonRenderer());
+        remisionesPendientes.getColumn("Abonar").setCellEditor(new AbonarButtonEditor(new JCheckBox(), remisionesPendientes));
+        
+        remisionesPendientes.getColumnModel().getColumn(0).setMinWidth(0);
+        remisionesPendientes.getColumnModel().getColumn(0).setMaxWidth(0);
+        remisionesPendientes.getColumnModel().getColumn(0).setWidth(0);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -52,16 +111,16 @@ public class NotasPorCobrar extends javax.swing.JFrame {
         nombreCliente.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         nombreCliente.setForeground(new java.awt.Color(0, 153, 153));
 
-        remisionesPendientes.setBackground(new java.awt.Color(153, 153, 153));
+        remisionesPendientes.setBackground(new java.awt.Color(204, 204, 204));
         remisionesPendientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID Remision", "No. Folio", "Cliente", "Fecha", "Importe Total", "Eliminar", "Abonar", "Ver Abonos"
             }
         ));
         jScrollPane1.setViewportView(remisionesPendientes);
@@ -70,17 +129,18 @@ public class NotasPorCobrar extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(nombreCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(134, 134, 134))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
             .addComponent(jSeparator1)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(18, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(nombreCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(134, 134, 134))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -93,7 +153,7 @@ public class NotasPorCobrar extends javax.swing.JFrame {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(82, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

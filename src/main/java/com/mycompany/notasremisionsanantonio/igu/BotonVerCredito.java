@@ -41,11 +41,9 @@ public class BotonVerCredito extends AbstractCellEditor implements TableCellRend
     @Override
     public void actionPerformed(ActionEvent e) {
         JFrame ventanaPadre = (JFrame) SwingUtilities.getWindowAncestor(table);
-        NotasPorCobrar ventana = new NotasPorCobrar(idCliente, ventanaPadre);
-        ventana.setNombreCliente(nombreCliente);
+        NotasPorCobrar ventana = new NotasPorCobrar(idCliente, nombreCliente, ventanaPadre);
         ventana.setVisible(true);
         ventana.setLocationRelativeTo(null);
         fireEditingStopped();
     }
-
 }
