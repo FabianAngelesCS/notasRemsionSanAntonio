@@ -21,9 +21,11 @@ public class AbonarRemision extends javax.swing.JFrame {
     private JLabel labelRestante;
     private JTextField txtAbono;
     private JButton btnRegistrar;
+    private PagoCompletoListener listener;
 
-    public AbonarRemision(int idRemision) {
+    public AbonarRemision(int idRemision, PagoCompletoListener listener) {
         this.idRemision = idRemision;
+        this.listener = listener;
         initComponents();
         cargarTotalYRestante();
     }
@@ -120,6 +122,9 @@ public class AbonarRemision extends javax.swing.JFrame {
                     try (PreparedStatement stmt = conn.prepareStatement(updateSQL)) {
                         stmt.setInt(1, idRemision);
                         stmt.executeUpdate();
+                    }
+                    if (listener != null) {
+                        listener.onRemisionPagada(idRemision); 
                     }
                     JOptionPane.showMessageDialog(this, "Remisión pagada en su totalidad.");
                     dispose(); // Cierra esta ventana

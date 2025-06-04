@@ -6,6 +6,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 
 public class AbonarButtonEditor extends DefaultCellEditor {
     private JButton button;
@@ -18,7 +19,7 @@ public class AbonarButtonEditor extends DefaultCellEditor {
         button.addActionListener(e -> {
             int row = table.getSelectedRow();
             int idRemision = (int) table.getValueAt(row, 0);
-            new AbonarRemision(idRemision).setVisible(true);
+           new AbonarRemision(idRemision, (PagoCompletoListener) SwingUtilities.getWindowAncestor(table)).setVisible(true);
         });
     }
 

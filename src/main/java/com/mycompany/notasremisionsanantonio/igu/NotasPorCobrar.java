@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class NotasPorCobrar extends javax.swing.JFrame {
+public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoListener{
     
     private int idCliente;
     private JFrame ventanaClientes;
@@ -35,6 +35,11 @@ public class NotasPorCobrar extends javax.swing.JFrame {
                 ventanaClientes.setVisible(true);
             }
         });
+    }
+
+    @Override
+    public void onRemisionPagada(int idRemision) {
+        cargarNotasRemision(idCliente); 
     }
 
     private void cargarNotasRemision(int idCliente) {
@@ -83,6 +88,9 @@ public class NotasPorCobrar extends javax.swing.JFrame {
         remisionesPendientes.getColumn("Abonar").setCellRenderer(new AbonarButtonRenderer());
         remisionesPendientes.getColumn("Abonar").setCellEditor(new AbonarButtonEditor(new JCheckBox(), remisionesPendientes));
         
+        remisionesPendientes.getColumn("Ver Abonos").setCellRenderer(new VerAbonosButtonRenderer());
+        remisionesPendientes.getColumn("Ver Abonos").setCellEditor(new VerAbonosButtonEditor(new JCheckBox(), remisionesPendientes));
+
         remisionesPendientes.getColumnModel().getColumn(0).setMinWidth(0);
         remisionesPendientes.getColumnModel().getColumn(0).setMaxWidth(0);
         remisionesPendientes.getColumnModel().getColumn(0).setWidth(0);
