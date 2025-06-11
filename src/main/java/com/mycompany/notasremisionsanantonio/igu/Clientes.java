@@ -175,11 +175,11 @@ public class Clientes extends javax.swing.JFrame {
              ResultSet rs = stmt.executeQuery("SELECT id_cliente, nombre, telefono, direccion, observaciones, estatus FROM cliente")) {
 
             DefaultTableModel modelo = new DefaultTableModel(
-                new Object[]{"ID", "Nombre", "Teléfono", "Dirección", "Observaciones", "Estatus", "Editar", "Ver Crédito"}, 0
+                new Object[]{"ID", "Nombre", "Teléfono", "Dirección", "Observaciones", "Estatus", "Editar", "Ver Crédito", "Notas pagadas"}, 0
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return column == 5 || column == 7;
+                    return column == 5 || column == 8;
                 }
 
                 @Override
