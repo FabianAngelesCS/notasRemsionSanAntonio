@@ -119,7 +119,6 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
         nombreCliente.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         nombreCliente.setForeground(new java.awt.Color(0, 153, 153));
 
-        remisionesPendientes.setBackground(new java.awt.Color(204, 204, 204));
         remisionesPendientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},

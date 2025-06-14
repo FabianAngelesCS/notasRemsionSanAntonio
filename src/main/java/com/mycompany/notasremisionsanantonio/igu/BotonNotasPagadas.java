@@ -39,7 +39,13 @@ public class BotonNotasPagadas extends AbstractCellEditor implements TableCellRe
     public void actionPerformed(ActionEvent e) {
         int row = table.getSelectedRow();
         int idCliente = (int) table.getValueAt(row, 0);
-        new NotasRemisionPagadas(idCliente).setVisible(true);
+
+        // Obtener ventana Clientes desde el JTable
+        JFrame ventanaClientes = (JFrame) SwingUtilities.getWindowAncestor(table);
+
+        // Llamar correctamente al constructor
+        new NotasRemisionPagadas(idCliente, ventanaClientes).setVisible(true);
+
         fireEditingStopped();
     }
 }

@@ -7,14 +7,30 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class NotasRemisionPagadas extends javax.swing.JFrame {
+    
+    private JFrame ventanaClientes;
 
-    public NotasRemisionPagadas(int idCliente) {
+    public NotasRemisionPagadas(int idCliente, JFrame ventanaClientes) {
+        
+        this.ventanaClientes = ventanaClientes;
+
         initComponents();
         setTitle("Notas de remisión pagadas");
         setLocationRelativeTo(null);
         cargarNotasRemisionPagadas(idCliente);
+        
         jTable1.getColumn("Abonos").setCellRenderer(new ButtonRendererNotasPagadas());
         jTable1.getColumn("Abonos").setCellEditor(new ButtonEditorNotasPagadas(new JCheckBox(), jTable1));
+        
+        this.ventanaClientes.setVisible(false);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                ventanaClientes.setVisible(true);
+            }
+        });
     }
     
     private void cargarNotasRemisionPagadas(int idCliente) {
@@ -72,6 +88,8 @@ public class NotasRemisionPagadas extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("Notas remisión pagadas");
