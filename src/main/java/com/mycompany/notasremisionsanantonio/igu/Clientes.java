@@ -179,7 +179,7 @@ public class Clientes extends javax.swing.JFrame {
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return column == 5 || column == 8;
+                    return column == 5 || column == 6 || column == 7 || column == 8;
                 }
 
                 @Override
@@ -213,6 +213,10 @@ public class Clientes extends javax.swing.JFrame {
             
             TablaClientes.getColumnModel().getColumn(7).setCellRenderer(new BotonVerCredito(TablaClientes));
             TablaClientes.getColumnModel().getColumn(7).setCellEditor(new BotonVerCredito(TablaClientes));
+            
+            TablaClientes.getColumnModel().getColumn(8).setCellRenderer(new BotonNotasPagadas(TablaClientes));
+            TablaClientes.getColumnModel().getColumn(8).setCellEditor(new BotonNotasPagadas(TablaClientes));
+
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + e.getMessage());
