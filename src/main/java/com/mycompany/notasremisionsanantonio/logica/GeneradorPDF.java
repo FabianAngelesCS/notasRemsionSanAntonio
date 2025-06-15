@@ -11,10 +11,12 @@ import java.sql.*;
 
 public class GeneradorPDF {
 
-    // 1. Método principal que genera el PDF y devuelve la ruta del archivo
     public static String generarPDF(int idRemision) throws Exception {
-        String ruta = "pdfs/remision_" + idRemision + ".pdf";
+        // Ruta del archivo en carpeta temporal del sistema
+        String nombreArchivo = "remision_" + idRemision + ".pdf";
+        String ruta = System.getProperty("java.io.tmpdir") + File.separator + nombreArchivo;
         File archivoPDF = new File(ruta);
+        archivoPDF.deleteOnExit();
 
         Document documento = new Document(PageSize.LETTER, 36, 36, 36, 36);
         PdfWriter.getInstance(documento, new FileOutputStream(archivoPDF));
@@ -42,8 +44,9 @@ public class GeneradorPDF {
         documento.add(layoutTabla);
         documento.close();
 
-        return ruta;
+        return ruta; // Devuelve la ruta temporal generada
     }
+
 
     // 2. Método para mostrar el PDF (abrirlo con visor predeterminado)
     public static void mostrarPDF(int idRemision) {
