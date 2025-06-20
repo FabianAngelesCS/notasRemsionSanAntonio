@@ -92,7 +92,7 @@ public class EstadoBoton {
                 conn.close();
                 
                 // Actualizar el modelo de la tabla
-                ((javax.swing.table.DefaultTableModel)tabla.getModel()).setValueAt(nuevoEstado, tabla.getSelectedRow(), 3);
+                ((javax.swing.table.DefaultTableModel)tabla.getModel()).setValueAt(nuevoEstado, tabla.getSelectedRow(), 5);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(button, "Error al actualizar estado: " + e.getMessage());
             }

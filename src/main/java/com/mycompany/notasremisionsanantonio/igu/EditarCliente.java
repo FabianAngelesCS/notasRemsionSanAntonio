@@ -4,6 +4,9 @@
  */
 package com.mycompany.notasremisionsanantonio.igu;
 import javax.swing.JOptionPane;
+import com.mycompany.notasremisionsanantonio.logica.Cliente;
+import java.awt.Frame;
+import javax.swing.JDialog;
 
 
 
@@ -11,55 +14,71 @@ import javax.swing.JOptionPane;
  *
  * @author Sebaz
  */
-public class EditarCliente extends javax.swing.JFrame {
+public class EditarCliente extends javax.swing.JDialog {
 
-    private String idCliente;
+    //private String idCliente;
     private boolean datosModificados = false;
-    public EditarCliente(javax.swing.JFrame parent,String idCliente,String nombre, 
-            String telefono, String direccion, String observaciones, boolean estatus ) {
-            this.idCliente =idCliente;
+    private Cliente clienteOriginal; // Para almacenar el cliente original y el ID
+
+    // Modifica el constructor para que reciba un objeto Cliente
+    public EditarCliente(Frame parent, Cliente cliente) {
+        super(parent, true); // Llama al constructor de JDialog, 'true' lo hace modal
+        this.clienteOriginal = cliente;
         initComponents();
-        // Establecer los valores en los campos
-        nombreEditado.setText(nombre);
-        telefonoEditado.setText(telefono);
-        direccEditado.setText(direccion);
-        observEditado.setText(observaciones);
-        estatusEditado.setSelected(estatus);
         
+        nombreEditado.setText(cliente.getNombre());
+        telefonoEditado.setText(cliente.getTelefono());
+        direccEditado.setText(cliente.getDireccion());
+        observEditado.setText(cliente.getObservaciones());
+        estatusEditado.setSelected(cliente.isEstatus());
         
         botonCancelar.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-        dispose(); // Simplemente cierra la ventana sin guardar
-    }
-});
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dispose(); // Simplemente cierra la ventana sin guardar
+            }
+        });
     
     setLocationRelativeTo(parent);
-    setTitle("Editando Cliente: " + nombre);
+    setTitle("Editando Cliente: " + cliente.getNombre());
     }
+    
+    // Nuevo método para obtener el objeto Cliente con los datos modificados
+    public Cliente getClienteModificado() {
+        Cliente clienteModificado = new Cliente();
+        clienteModificado.setId_cliente(clienteOriginal.getId_cliente()); // Usa el ID original
+        clienteModificado.setNombre(nombreEditado.getText().trim());
+        clienteModificado.setTelefono(telefonoEditado.getText().trim());
+        clienteModificado.setDireccion(direccEditado.getText().trim());
+        clienteModificado.setObservaciones(observEditado.getText().trim());
+        clienteModificado.setEstatus(estatusEditado.isSelected());
+        return clienteModificado;
+    }
+    
+    public boolean isDatosModificados() {
+            return datosModificados;
+}
 
-        public String getNombre() {
-            return nombreEditado.getText();
+       /* public String getNombre() {
+            return nombreEditado.getText().trim();
 }
 
         public String getTelefono() {
-            return telefonoEditado.getText();
+            return telefonoEditado.getText().trim();
 }
 
         public String getDireccion() {
-            return direccEditado.getText();
+            return direccEditado.getText().trim();
 }
 
         public String getObservaciones() {
-            return observEditado.getText();
+            return observEditado.getText().trim();
 }
 
         public boolean getEstatus() {
             return estatusEditado.isSelected();
-}
+}*/
 
-        public boolean isDatosModificados() {
-            return datosModificados;
-}
+        
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -85,7 +104,7 @@ public class EditarCliente extends javax.swing.JFrame {
         botonGuardar = new javax.swing.JButton();
         botonCancelar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("NOMBRE");
 
@@ -202,31 +221,43 @@ public class EditarCliente extends javax.swing.JFrame {
 
     private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
         if(validarCampos()){
-            datosModificados=true;
-            dispose();
-        }
+        this.datosModificados = true;
+        dispose(); // Cierra la ventana después de validar
+    }
         
     }//GEN-LAST:event_botonGuardarActionPerformed
 
     private void botonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCancelarActionPerformed
-        // TODO add your handling code here:
+        datosModificados=false;
+        dispose();
     }//GEN-LAST:event_botonCancelarActionPerformed
      
     private boolean validarCampos() {
     if (nombreEditado.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El nombre es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
+        mostrarError("El nombre es obligatorio");
         return false;
     }
+    
     if (telefonoEditado.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El teléfono es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
+        mostrarError("El teléfono es obligatorio");
+        return false;
+    } else if (!telefonoEditado.getText().matches("\\d{8,15}")) {
+        mostrarError("Teléfono debe contener solo números (8-15 dígitos)");
         return false;
     }
+    
     if (direccEditado.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "La direccion es obligatoria", "Error", JOptionPane.ERROR_MESSAGE);
+        mostrarError("La dirección es obligatoria");
         return false;
     }
-        return true;
+    
+    return true;
 }
+
+private void mostrarError(String mensaje) {
+    JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+}
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonCancelar;

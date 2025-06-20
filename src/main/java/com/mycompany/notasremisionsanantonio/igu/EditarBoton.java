@@ -29,44 +29,34 @@ public class EditarBoton {
     }
 
     public static class Editor extends DefaultCellEditor {
-        private JButton button;
-        private Object idRegistro;
-        private JTable tabla;
-        private int filaActual;
-        private Consumer<Object> accionEditar;
+    private final JButton button;
+    private String currentId;
+    private final Consumer<String> action;
 
-        public Editor(JCheckBox checkBox, Consumer<Object> accionEditar) {
-            super(checkBox);
-            this.accionEditar = accionEditar;
-            
-            button = new JButton();
-            button.setOpaque(true);
-            button.setBackground(new Color(70, 130, 180));
-            button.setForeground(Color.WHITE);
-            button.setText("Editar");
-            button.addActionListener(this::accionBoton);
-        }
-
-        private void accionBoton(ActionEvent e) {
-            fireEditingStopped();
-            if (accionEditar != null) {
-                accionEditar.accept(idRegistro);
-            }
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                 boolean isSelected, int row, int column) {
-            this.tabla = table;
-            this.filaActual = row;
-            this.idRegistro = table.getValueAt(row, 0); // Asume que el ID está en la columna 0
-            
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return "Editar";
-        }
+    public Editor(JCheckBox checkBox, Consumer<String> action) {
+        super(checkBox);
+        this.action = action;
+        button = createButton();
     }
+
+    private JButton createButton() {
+        JButton btn = new JButton("Editar");
+        btn.setBackground(new Color(70, 130, 180));
+        btn.setForeground(Color.WHITE);
+        btn.addActionListener(e -> {
+            fireEditingStopped();
+            if (action != null && currentId != null) {
+                action.accept(currentId);
+            }
+        });
+        return btn;
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, 
+                                              boolean isSelected, int row, int column) {
+        currentId = table.getValueAt(row, 0).toString(); // Obtiene el ID de la columna 0
+        return button;
+    }
+}
 }

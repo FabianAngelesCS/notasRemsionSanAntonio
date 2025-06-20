@@ -16,12 +16,18 @@ import javax.swing.JCheckBox;
 import com.mycompany.notasremisionsanantonio.igu.EditarCliente;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
+import java.sql.SQLException;
+import com.mycompany.notasremisionsanantonio.logica.Cliente; // Importar la clase Cliente
+import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
+
 
 public class Clientes extends javax.swing.JFrame {
     private Inicio ventanaInicio;
+    private ClienteDAO clienteDAO;
 
     public Clientes(Inicio ventanaInicio) {
         this.ventanaInicio = ventanaInicio;
+        this.clienteDAO = new ClienteDAO(); // Inicializa ClienteDAO
         initComponents();
         cargarClientes();
         configurarCierreVentana();
@@ -179,129 +185,96 @@ public class Clientes extends javax.swing.JFrame {
 
     public void cargarClientes() {
         Conexion conexion = new Conexion();
-            try (Connection conn = conexion.conectar();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT id_cliente, nombre, telefono, direccion, observaciones, estatus FROM cliente")) {
-            
-            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"ID","Nombre", "Telefono", "Direccion", "Observaciones", "Estatus", "Editar"}, 0){
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                // Solo las columnas de botones son editables
-                    return column == 5 || column == 6;
+        DefaultTableModel modelo = new DefaultTableModel(new Object[]{"ID","Nombre", "Telefono", "Direccion", "Observaciones", "Estatus", "Editar"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 5 || column == 6; // Estatus y Editar son editables
             }
-                @Override
+            @Override
             public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 5) return Boolean.class; // Para el estado Activo/Inactivo
+                if (columnIndex == 5) return Boolean.class;
                 return super.getColumnClass(columnIndex);
             }
-            };
+        };
+        
+        try (Connection conn = conexion.conectar();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT id_cliente, nombre, telefono, direccion, observaciones, estatus FROM cliente")) {
             
             while (rs.next()) {
-                String id=rs.getString("id_cliente");
+                String id = rs.getString("id_cliente");
                 String nombre = rs.getString("nombre");
                 String telefono = rs.getString("telefono");
                 String direccion = rs.getString("direccion");
                 String observaciones = rs.getString("observaciones");
                 boolean estatus = rs.getBoolean("estatus");
 
-                modelo.addRow(new Object[]{id, nombre, telefono, direccion, observaciones,estatus, "Editar"});
+                modelo.addRow(new Object[]{id, nombre, telefono, direccion, observaciones, estatus, "Editar"});
             }
 
-                TablaClientes.setModel(modelo);
-                
-                // Ocultar columna ID
-                TablaClientes.getColumnModel().getColumn(0).setMinWidth(0);
-                TablaClientes.getColumnModel().getColumn(0).setMaxWidth(0);
-                TablaClientes.getColumnModel().getColumn(0).setWidth(0);
-                
-                // Configurar columna de estado
-                TableColumn estadoColumn = TablaClientes.getColumnModel().getColumn(5);
-                estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
-                estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "cliente", "id_cliente"));
-                
-                // Configurar columna de edición
-                TableColumn editarColumn = TablaClientes.getColumnModel().getColumn(6);
-                editarColumn.setCellRenderer(new EditarBoton.Renderer());
-                editarColumn.setCellEditor(new EditarBoton.Editor(
+            TablaClientes.setModel(modelo);
+            
+            // Ocultar columna ID
+            TablaClientes.getColumnModel().getColumn(0).setMinWidth(0);
+            TablaClientes.getColumnModel().getColumn(0).setMaxWidth(0);
+            TablaClientes.getColumnModel().getColumn(0).setWidth(0);
+            
+            // Configurar columna de estado
+            TableColumn estadoColumn = TablaClientes.getColumnModel().getColumn(5);
+            estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
+            estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "cliente", "id_cliente"));
+            
+            // Configurar columna de edición
+            TableColumn editarColumn = TablaClientes.getColumnModel().getColumn(6);
+            editarColumn.setCellRenderer(new EditarBoton.Renderer());
+            editarColumn.setCellEditor(new EditarBoton.Editor(
                 new JCheckBox(), 
-                id -> {
-                    // Obtener todos los datos de la fila
+                // Lambda para la acción del botón de edición
+                id -> { 
                     int fila = TablaClientes.getSelectedRow();
-                
-                String idCliente =modelo.getValueAt(fila,0).toString();
-                String nombre = modelo.getValueAt(fila, 1).toString();
-                String telefono = modelo.getValueAt(fila, 2).toString();
-                String direccion = modelo.getValueAt(fila, 3).toString();
-                String observaciones = modelo.getValueAt(fila, 4).toString();
-                boolean estatus = (Boolean) modelo.getValueAt(fila, 5);
-        
-        // Mostrar JFrame de edición
-        EditarCliente dialog = new EditarCliente(
-            Clientes.this, 
-            idCliente,
-            nombre,
-            telefono,
-            direccion,
-            observaciones,
-            estatus
-        );
-        dialog.setVisible(true);
-        
-        if (dialog.isDatosModificados()) {
-            // Actualizar tabla
-            modelo.setValueAt(dialog.getNombre(), fila, 1);
-            modelo.setValueAt(dialog.getTelefono(), fila, 2);
-            modelo.setValueAt(dialog.getDireccion(), fila, 3);
-            modelo.setValueAt(dialog.getObservaciones(), fila, 4);
-            modelo.setValueAt(dialog.getEstatus(), fila, 5);
-            
-            // Actualizar BD
-            actualizarClienteEnBD(
-                idCliente,
-                dialog.getNombre(),
-                dialog.getTelefono(),
-                dialog.getDireccion(),
-                dialog.getObservaciones(),
-                dialog.getEstatus()
-            );
-        }
-    }
-));
+                    if (fila < 0) {
+                        JOptionPane.showMessageDialog(this, "Seleccione un cliente para editar", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    // Obtener los datos del cliente de la fila seleccionada
+                    int idCliente = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
+                    String nombre = modelo.getValueAt(fila, 1).toString();
+                    String telefono = modelo.getValueAt(fila, 2).toString();
+                    String direccion = modelo.getValueAt(fila, 3).toString();
+                    String observaciones = modelo.getValueAt(fila, 4).toString();
+                    boolean estatus = (Boolean) modelo.getValueAt(fila, 5);
+                    
+                    // Crear un objeto Cliente con los datos actuales de la tabla
+                    Cliente clienteAEditar = new Cliente(idCliente, nombre, telefono, direccion, observaciones, estatus);
 
-        }catch (Exception e) {
+                    // Abrir la ventana de edición pasando el objeto Cliente
+                    EditarCliente dialog = new EditarCliente(this, clienteAEditar);
+                    dialog.setVisible(true); // Se bloquea hasta que el dialog se cierra
+                    
+                    if (dialog.isDatosModificados()) {
+                        // Obtener el objeto Cliente con los datos modificados de la ventana de edición
+                        Cliente clienteActualizado = dialog.getClienteModificado();
+                        
+                        // Llamar al método de ClienteDAO para actualizar en la BD
+                        boolean exito = clienteDAO.actualizarCliente(clienteActualizado);
+                        
+                        if (exito) {
+                            JOptionPane.showMessageDialog(this, "¡Cliente actualizado correctamente!");
+                            cargarClientes(); // Recargar la tabla para ver los cambios
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Error al actualizar el cliente en la base de datos.", 
+                                                          "Error de Actualización", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+            ));
+
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + e.getMessage());
+            e.printStackTrace();
         }
-        
     }
-    
-        private void actualizarClienteEnBD(String id, String nombre, String telefono, 
-                                     String direccion, String observaciones, 
-                                     boolean estatus) {
-            
-       try (Connection conn = new Conexion().conectar();
-         PreparedStatement ps = conn.prepareStatement(
-            "UPDATE cliente SET nombre = ?, telefono = ?, direccion = ?, " +
-            "observaciones = ?, estatus = ? WHERE id_cliente = ?")) {
-        
-        ps.setString(1, nombre);
-        ps.setString(2, telefono);
-        ps.setString(3, direccion);
-        ps.setString(4, observaciones);
-        ps.setBoolean(5, estatus);
-        ps.setString(6, id);
-        
-        int filasAfectadas = ps.executeUpdate();
-        
-        if (filasAfectadas > 0) {
-            JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente");
-        } else {
-            JOptionPane.showMessageDialog(this, "No se encontró el cliente a actualizar");
-        }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error al actualizar cliente: " + e.getMessage());
-        e.printStackTrace();
-    } 
-}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TablaClientes;
     private javax.swing.JButton agregarCliente;
