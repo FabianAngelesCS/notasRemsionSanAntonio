@@ -94,8 +94,4 @@ public class EstadoBoton {
 
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(button, "Error al actualizar estado: " + e.getMessage());
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-}
+                System.out.println(e.getMessage());}}}}

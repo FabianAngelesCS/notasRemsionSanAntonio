@@ -64,14 +64,12 @@ public class Producto {
         this.cantidad = cantidad;
     }
 
-    public boolean isEstatus() {
-        return estatus;
+    public void setEstatus(boolean aBoolean) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    public void setEstatus(boolean estatus) {
-        this.estatus = estatus;
+    public boolean isEstatus() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    public String toString() {
-        return nombre;
-    }
+  
 }

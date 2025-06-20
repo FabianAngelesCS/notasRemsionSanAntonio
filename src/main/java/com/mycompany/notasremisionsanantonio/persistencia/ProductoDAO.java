@@ -39,6 +39,29 @@ public class ProductoDAO {
         }
     }
     
+    /*public boolean actualizarProducto(Producto producto){
+        Conexion conexion = new Conexion();
+        Connection conn = null;
+        PreparedStatement ps = null;
+    
+        try {
+            conn = conexion.conectar();
+            if (conn == null) {
+                System.out.println("Error: Conexión a la base de datos fallida.");
+                return false;
+            }
+            conn.setAutoCommit(false); // Desactivar autocommit para manejo de transacciones
+            
+            String sql = "UPDATE producto SET nombre = ?, caracteristicas = ?, precio = ?, " +
+                         ", estatus = ?,cantidad = ? WHERE id_producto = ?";
+    
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, producto.getNombre());
+            ps.setString(2, producto.getCaracteristicas());
+            ps.setInt(3, producto.getPrecio());
+            ps.setString(1, producto.getNombre());
+    }*/
+    
     public List<Producto> obtenerProductos() {
         List<Producto> lista = new ArrayList<>();
         Conexion conexion = new Conexion();
