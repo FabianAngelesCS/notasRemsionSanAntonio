@@ -162,7 +162,7 @@ public class GeneradorPDF {
 
             while (rs.next()) {
                 tabla.addCell(new PdfPCell(new Phrase(rs.getString("nombre"), fuenteFila)));
-                tabla.addCell(new PdfPCell(new Phrase(String.valueOf(rs.getInt("cantidad")), fuenteFila)));
+                tabla.addCell(new PdfPCell(new Phrase(String.format("%.2f", rs.getDouble("cantidad")), fuenteFila)));
                 tabla.addCell(new PdfPCell(new Phrase(String.format("$%.2f", rs.getDouble("precio_unitario")), fuenteFila)));
                 double subtotal = rs.getDouble("subtotal");
                 tabla.addCell(new PdfPCell(new Phrase(String.format("$%.2f", subtotal), fuenteFila)));
