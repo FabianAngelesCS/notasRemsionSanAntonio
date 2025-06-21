@@ -27,6 +27,6 @@ public class DetalleNota {
     }
 
     public int calcularSubtotal() {
-        return producto.getPrecio() * cantidad;
+        return (int) (producto.getPrecio() * cantidad);
     }
 }

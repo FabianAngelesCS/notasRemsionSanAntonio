@@ -4,7 +4,7 @@ package com.mycompany.notasremisionsanantonio.logica;
 public class Producto {
     private int id_producto;
     private String nombre;
-    private int precio;
+    private Double precio;
     private String caracteristicas;
     private int cantidad;
     private boolean estatus;
@@ -14,7 +14,7 @@ public class Producto {
         
     }
 
-    public Producto(int id_producto, String nombre, int precio, 
+    public Producto(int id_producto, String nombre, Double precio, 
             String caracteristicas, int cantidad, boolean estatus) {
         this.id_producto = id_producto;
         this.nombre = nombre;
@@ -40,11 +40,11 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public int getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(int precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
@@ -64,12 +64,13 @@ public class Producto {
         this.cantidad = cantidad;
     }
 
-    public void setEstatus(boolean aBoolean) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void setEstatus(boolean estatus) {
+        
+        this.estatus = estatus; // Asigna el valor del parámetro al atributo de la clase
     }
 
     public boolean isEstatus() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return estatus;
     }
   
 }

@@ -74,24 +74,56 @@ public class EstadoBoton {
         public Object getCellEditorValue() {
             return !estadoActual;
         }
+        
+        private static final String NOMBRE_ENCABEZADO_ESTATUS= "Estatus";
 
         private void cambiarEstadoRegistro() {
-            boolean nuevoEstado = !estadoActual;
-            System.out.println("UPDATE " + nombreTabla + " SET estatus = " + nuevoEstado +
-                   " WHERE " + nombreCampoID + " = " + idRegistro);
+        boolean nuevoEstado = !estadoActual;
+        System.out.println("UPDATE " + nombreTabla + " SET estatus = " + nuevoEstado +
+                " WHERE " + nombreCampoID + " = " + idRegistro);
 
-            try {Conexion conexion = new Conexion();
-                Connection conn = conexion.conectar();
-                java.sql.PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE " + nombreTabla + " SET estatus = ? WHERE " + nombreCampoID + " = ?");
-                ps.setBoolean(1, nuevoEstado);
-                ps.setInt(2, idRegistro);
-                ps.executeUpdate();
-                conn.close();
-                
-                // Actualizar el modelo de la tabla
-                ((javax.swing.table.DefaultTableModel)tabla.getModel()).setValueAt(nuevoEstado, tabla.getSelectedRow(), 3);
+        // Usando try-with-resources para asegurar el cierre de recursos
+        try (Connection conn = new Conexion().conectar();
+             java.sql.PreparedStatement ps = conn.prepareStatement(
+                 "UPDATE " + nombreTabla + " SET estatus = ? WHERE " + nombreCampoID + " = ?")) {
 
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(button, "Error al actualizar estado: " + e.getMessage());
-                System.out.println(e.getMessage());}}}}
+            ps.setBoolean(1, nuevoEstado);
+            ps.setInt(2, idRegistro);
+            ps.executeUpdate();
+
+            // --- INICIO DE LA PARTE PARA ACTUALIZAR LA TABLA VISUAL ---
+            int filaSeleccionada = tabla.getSelectedRow();
+            if (filaSeleccionada != -1) { // Asegúrate de que haya una fila seleccionada
+                int indiceColumnaEstatus = -1;
+
+                // Buscar el índice de la columna "Estatus" por su nombre
+                for (int i = 0; i < tabla.getColumnModel().getColumnCount(); i++) {
+                    // Compara el texto del encabezado. ¡Debe ser EXACTO!
+                    if (tabla.getColumnModel().getColumn(i).getHeaderValue().equals(NOMBRE_ENCABEZADO_ESTATUS)) {
+                        indiceColumnaEstatus = i;
+                        break; // Una vez encontrado, salimos del bucle
+                    }
+                }
+
+                if (indiceColumnaEstatus != -1) {
+                    // Si se encontró la columna, actualiza el valor en el modelo de la tabla
+                    ((javax.swing.table.DefaultTableModel)tabla.getModel()).setValueAt(nuevoEstado, filaSeleccionada, indiceColumnaEstatus);
+                } else {
+                    // Manejar el caso donde la columna "Estatus" no se encuentra
+                    System.err.println("Error: La columna con encabezado '" + NOMBRE_ENCABEZADO_ESTATUS + "' no se encontró en la tabla '" + nombreTabla + "'.");
+                    JOptionPane.showMessageDialog(button, "Advertencia: No se pudo actualizar el estado visual en la tabla. La columna '"+ NOMBRE_ENCABEZADO_ESTATUS +"' no se encontró.");
+                }
+            } else {
+                System.out.println("No se seleccionó ninguna fila para actualizar visualmente en la tabla '" + nombreTabla + "'.");
+            }
+            // --- FIN DE LA PARTE PARA ACTUALIZAR LA TABLA VISUAL ---
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(button, "Error al actualizar estado: " + e.getMessage());
+            System.err.println("Error en cambiarEstadoRegistro: " + e.getMessage());
+            e.printStackTrace(); // Imprime el stack trace para depuración
+        }
+    }
+
+    }
+}

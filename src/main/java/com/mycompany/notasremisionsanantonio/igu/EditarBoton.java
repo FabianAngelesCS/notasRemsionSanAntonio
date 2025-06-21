@@ -30,10 +30,10 @@ public class EditarBoton {
 
     public static class Editor extends DefaultCellEditor {
     private final JButton button;
-    private String currentId;
-    private final Consumer<String> action;
+    private int currentRow;
+    private final Consumer<Integer> action;
 
-    public Editor(JCheckBox checkBox, Consumer<String> action) {
+    public Editor(JCheckBox checkBox, Consumer<Integer> action) {
         super(checkBox);
         this.action = action;
         button = createButton();
@@ -45,8 +45,8 @@ public class EditarBoton {
         btn.setForeground(Color.WHITE);
         btn.addActionListener(e -> {
             fireEditingStopped();
-            if (action != null && currentId != null) {
-                action.accept(currentId);
+            if (action != null) {
+                action.accept(currentRow);
             }
         });
         return btn;
@@ -55,7 +55,7 @@ public class EditarBoton {
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, 
                                               boolean isSelected, int row, int column) {
-        currentId = table.getValueAt(row, 0).toString(); // Obtiene el ID de la columna 0
+        this.currentRow=row; // Obtiene el ID de la columna 0
         return button;
     }
 }

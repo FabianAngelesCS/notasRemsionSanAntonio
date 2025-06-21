@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import com.mycompany.notasremisionsanantonio.igu.EstadoBoton;
+import com.mycompany.notasremisionsanantonio.logica.Producto;
+import com.mycompany.notasremisionsanantonio.persistencia.ProductoDAO;
 //import javax.swing.table.TableCellEditor;
 //import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -148,9 +150,9 @@ public class Productos extends javax.swing.JFrame {
         Conexion conexion = new Conexion();
         try (Connection conn = conexion.conectar();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id_producto, nombre, caracteristicas, precio, estatus FROM producto")) {
+             ResultSet rs = stmt.executeQuery("SELECT id_producto, nombre, caracteristicas, precio, estatus, cantidad FROM producto")) {
  
-            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"ID", "Nombre", "Descripción", "Precio", "Estatus", "Editar"}, 0){
+            DefaultTableModel modelo = new DefaultTableModel(new Object[]{"ID", "Nombre", "Descripción", "Precio", "Estatus", "Editar","ProductoCompleto"}, 0){
                 @Override
                 public boolean isCellEditable(int row, int column) {
                 // Solo las columnas de botones son editables
@@ -158,7 +160,8 @@ public class Productos extends javax.swing.JFrame {
             }
               @Override
             public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 4) return Boolean.class; 
+                if (columnIndex == 4) return Boolean.class;
+                if (columnIndex == 6) return Producto.class;
 
                 return super.getColumnClass(columnIndex);
             }
@@ -167,12 +170,14 @@ public class Productos extends javax.swing.JFrame {
             while (rs.next()) {
                 int id_producto = rs.getInt("id_producto");
                 String nombre = rs.getString("nombre");
-                String descripcion = rs.getString("caracteristicas");
+                String caracteristicas = rs.getString("caracteristicas");
                 double precio = rs.getDouble("precio");
                 boolean estatus = rs.getBoolean("estatus");
+                int cantidad = rs.getInt("cantidad");
+                
+                Producto productoCompleto = new Producto(id_producto, nombre, precio, caracteristicas, cantidad,estatus);
 
-                modelo.addRow(new Object[]{id_producto, nombre, descripcion, precio, estatus, "Editar"});
-                modelo.addRow(new Object[]{nombre, descripcion, precio, estatus, "Editar"});
+                modelo.addRow(new Object[]{id_producto, nombre, caracteristicas, precio, estatus, "Editar",productoCompleto});
             }
 
             tablaProductos.setModel(modelo);
@@ -181,9 +186,83 @@ public class Productos extends javax.swing.JFrame {
             tablaProductos.getColumnModel().getColumn(0).setMaxWidth(0);
             tablaProductos.getColumnModel().getColumn(0).setWidth(0);
             
+            tablaProductos.getColumnModel().getColumn(6).setMinWidth(0);
+            tablaProductos.getColumnModel().getColumn(6).setMaxWidth(0);
+            tablaProductos.getColumnModel().getColumn(6).setWidth(0);
+            
             TableColumn estadoColumn = tablaProductos.getColumnModel().getColumn(4);
             estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
             estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "producto", "id_producto"));
+            
+            TableColumn editarColumn=tablaProductos.getColumnModel().getColumn(5);
+            editarColumn.setCellRenderer(new EditarBoton.Renderer());
+            editarColumn.setCellEditor(new EditarBoton.Editor(
+                    new JCheckBox(),
+                    filaSeleccionada -> { // <-- el parámetro 'filaSeleccionada' ahora es un Integer
+        // El 'id' que tenías antes ya no es necesario aquí, ya que estamos pasando la fila
+        // int id = fila; // Esto era confuso si 'id' era el id del producto o el índice de la fila
+
+        // VALIDACIÓN DE FILA (aunque el Editor ya debería asegurar que hay una fila válida)
+        if (filaSeleccionada < 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para editar", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Obtener el objeto Producto completo de la columna oculta (índice 6)
+            Producto productoAeditar = (Producto) modelo.getValueAt(filaSeleccionada, 6); // Usar filaSeleccionada aquí
+
+            if (productoAeditar == null) {
+                System.err.println("Error: El objeto Producto de la columna oculta es null en la fila " + filaSeleccionada);
+                JOptionPane.showMessageDialog(this, "No se pudo obtener la información completa del producto.", "Error Interno", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            EditarProducto dialog = new EditarProducto(this, productoAeditar);
+            dialog.setVisible(true);
+
+            // LÓGICA DESPUÉS DE QUE EL DIÁLOGO SE CIERRA (ya explicada en la respuesta anterior)
+            if (dialog.productoModificados()) {
+                Producto productoModificado = dialog.getProductoModificado();
+                if (productoModificado != null) {
+                    try {
+                        ProductoDAO productoDAO = new ProductoDAO();
+                        boolean exito = productoDAO.actualizarProducto(productoModificado);
+
+                        if (exito) {
+                            JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            // Actualizar la fila en la tabla visualmente
+                            modelo.setValueAt(productoModificado.getNombre(), filaSeleccionada, 1);
+                            modelo.setValueAt(productoModificado.getCaracteristicas(), filaSeleccionada, 2);
+                            modelo.setValueAt(productoModificado.getPrecio(), filaSeleccionada, 3);
+                            modelo.setValueAt(productoModificado.isEstatus(), filaSeleccionada, 4);
+                            modelo.setValueAt(productoModificado, filaSeleccionada, 6); // Actualiza el objeto completo
+                            
+                            // Asegurarte de que la tabla se redibuje
+                            modelo.fireTableRowsUpdated(filaSeleccionada, filaSeleccionada);
+
+                        } else {
+                            JOptionPane.showMessageDialog(this, "No se pudo actualizar el producto en la base de datos.", "Error de Base de Datos", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(this, "Error inesperado al guardar los cambios del producto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
+                }
+            } else {
+                System.out.println("Edición de producto cancelada.");
+            }
+        } catch (ClassCastException e) {
+            System.err.println("Error de casteo al obtener Producto de la tabla: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error interno al procesar el producto para edición (ClassCastException).", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            System.err.println("Error general al intentar abrir el diálogo de edición: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Ocurrió un error inesperado al preparar la edición.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+));
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage());
