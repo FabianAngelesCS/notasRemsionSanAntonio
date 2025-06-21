@@ -1,11 +1,10 @@
-
 package com.mycompany.notasremisionsanantonio.logica;
 
 public class DetalleNota {
     private Producto producto;
-    private int cantidad;
+    private double cantidad;
 
-    public DetalleNota(Producto producto, int cantidad) {
+    public DetalleNota(Producto producto, double cantidad) {
         this.producto = producto;
         this.cantidad = cantidad;
     }
@@ -18,15 +17,15 @@ public class DetalleNota {
         this.producto = producto;
     }
 
-    public int getCantidad() {
+    public double getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(double cantidad) {
         this.cantidad = cantidad;
     }
 
-    public int calcularSubtotal() {
+    public double calcularSubtotal() {
         return producto.getPrecio() * cantidad;
     }
 }

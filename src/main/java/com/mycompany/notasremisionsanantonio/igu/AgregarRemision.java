@@ -447,7 +447,7 @@ public class AgregarRemision extends javax.swing.JFrame {
             return;
         }
 
-        String folio = generarFolio(); // Puedes implementar un generador único
+        String folio = generarFolio();
         RemisionDAO remisionDAO = new RemisionDAO();
         int idRemision = remisionDAO.insertarRemision(cliente.getId_cliente(), fecha, folio);
 
@@ -458,7 +458,7 @@ public class AgregarRemision extends javax.swing.JFrame {
 
         for (int i = 0; i < model.getRowCount(); i++) {
             int idProducto = (int) model.getValueAt(i, 0);
-            int cantidad = (int) model.getValueAt(i, 2);
+            double cantidad = (double) model.getValueAt(i, 2); 
             double precioUnitario = (double) model.getValueAt(i, 3);
 
             remisionDAO.insertarDetalleRemision(idRemision, idProducto, cantidad, precioUnitario);

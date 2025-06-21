@@ -30,14 +30,14 @@ public class RemisionDAO {
         return idGenerado;
     }
 
-    public void insertarDetalleRemision(int idRemision, int idProducto, int cantidad, double precio) {
+    public void insertarDetalleRemision(int idRemision, int idProducto, double cantidad, double precio) {
         String sql = "INSERT INTO detalle_remision (id_remision, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
         try (Connection conn = new Conexion().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idRemision);
             stmt.setInt(2, idProducto);
-            stmt.setInt(3, cantidad);
+            stmt.setDouble(3, cantidad);
             stmt.setDouble(4, precio);
             stmt.executeUpdate();
 
