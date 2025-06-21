@@ -1,4 +1,3 @@
-
 package com.mycompany.notasremisionsanantonio.igu;
 
 ///import com.mycompany.notasremisionsanantonio.logica.Cliente;
@@ -14,12 +13,23 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JCheckBox;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JCheckBox;
+import com.mycompany.notasremisionsanantonio.igu.EditarCliente;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import com.mycompany.notasremisionsanantonio.logica.Cliente; // Importar la clase Cliente
+import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
 
 public class Clientes extends javax.swing.JFrame {
     private Inicio ventanaInicio;
+    private ClienteDAO clienteDAO;
 
     public Clientes(Inicio ventanaInicio) {
         this.ventanaInicio = ventanaInicio;
+        this.clienteDAO = new ClienteDAO(); // Inicializa ClienteDAO
         initComponents();
         cargarClientes();
         configurarCierreVentana();
@@ -215,6 +225,52 @@ public class Clientes extends javax.swing.JFrame {
             
             TablaClientes.getColumnModel().getColumn(8).setCellRenderer(new BotonNotasPagadas(TablaClientes));
             TablaClientes.getColumnModel().getColumn(8).setCellEditor(new BotonNotasPagadas(TablaClientes));
+            
+            // Configurar columna de edición
+            TableColumn editarColumn = TablaClientes.getColumnModel().getColumn(6);
+            editarColumn.setCellRenderer(new EditarBoton.Renderer());
+            editarColumn.setCellEditor(new EditarBoton.Editor(
+                new JCheckBox(), 
+                // Lambda para la acción del botón de edición
+                id -> { 
+                    int fila = TablaClientes.getSelectedRow();
+                    if (fila < 0) {
+                        JOptionPane.showMessageDialog(this, "Seleccione un cliente para editar", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    // Obtener los datos del cliente de la fila seleccionada
+                    int idCliente = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
+                    String nombre = modelo.getValueAt(fila, 1).toString();
+                    String telefono = modelo.getValueAt(fila, 2).toString();
+                    String direccion = modelo.getValueAt(fila, 3).toString();
+                    String observaciones = modelo.getValueAt(fila, 4).toString();
+                    boolean estatus = (Boolean) modelo.getValueAt(fila, 5);
+                    
+                    // Crear un objeto Cliente con los datos actuales de la tabla
+                    Cliente clienteAEditar = new Cliente(idCliente, nombre, telefono, direccion, observaciones, estatus);
+
+                    // Abrir la ventana de edición pasando el objeto Cliente
+                    EditarCliente dialog = new EditarCliente(this, clienteAEditar);
+                    dialog.setVisible(true); // Se bloquea hasta que el dialog se cierra
+                    
+                    if (dialog.isDatosModificados()) {
+                        // Obtener el objeto Cliente con los datos modificados de la ventana de edición
+                        Cliente clienteActualizado = dialog.getClienteModificado();
+                        
+                        // Llamar al método de ClienteDAO para actualizar en la BD
+                        boolean exito = clienteDAO.actualizarCliente(clienteActualizado);
+                        
+                        if (exito) {
+                            JOptionPane.showMessageDialog(this, "¡Cliente actualizado correctamente!");
+                            cargarClientes(); // Recargar la tabla para ver los cambios
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Error al actualizar el cliente en la base de datos.", 
+                                                          "Error de Actualización", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+            ));
 
 
         } catch (Exception e) {
@@ -235,7 +291,8 @@ public class Clientes extends javax.swing.JFrame {
             }
         }
     }*/
-
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TablaClientes;
     private javax.swing.JButton agregarCliente;

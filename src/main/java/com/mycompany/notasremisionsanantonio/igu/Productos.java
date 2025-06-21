@@ -159,6 +159,7 @@ public class Productos extends javax.swing.JFrame {
               @Override
             public Class<?> getColumnClass(int columnIndex) {
                 if (columnIndex == 4) return Boolean.class; 
+
                 return super.getColumnClass(columnIndex);
             }
             };
@@ -171,6 +172,7 @@ public class Productos extends javax.swing.JFrame {
                 boolean estatus = rs.getBoolean("estatus");
 
                 modelo.addRow(new Object[]{id_producto, nombre, descripcion, precio, estatus, "Editar"});
+                modelo.addRow(new Object[]{nombre, descripcion, precio, estatus, "Editar"});
             }
 
             tablaProductos.setModel(modelo);
@@ -182,12 +184,12 @@ public class Productos extends javax.swing.JFrame {
             TableColumn estadoColumn = tablaProductos.getColumnModel().getColumn(4);
             estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
             estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "producto", "id_producto"));
-                           
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage());
         }
     }
+             
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregarProducto;

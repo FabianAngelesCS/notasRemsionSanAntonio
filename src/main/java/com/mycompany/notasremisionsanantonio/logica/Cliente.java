@@ -1,4 +1,3 @@
-
 package com.mycompany.notasremisionsanantonio.logica;
 
 import java.util.ArrayList;
@@ -87,4 +86,3 @@ public class Cliente {
         return nombre;
     }
 }
-

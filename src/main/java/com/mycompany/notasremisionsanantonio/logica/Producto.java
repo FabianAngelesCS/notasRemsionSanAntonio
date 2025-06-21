@@ -62,8 +62,12 @@ public class Producto {
         this.cantidad = cantidad;
     }
 
+    public void setEstatus(boolean aBoolean) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     public boolean isEstatus() {
-        return estatus;
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     public void setEstatus(boolean estatus) {
