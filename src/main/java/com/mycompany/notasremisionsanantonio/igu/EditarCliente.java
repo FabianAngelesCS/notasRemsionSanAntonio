@@ -12,7 +12,7 @@ public class EditarCliente extends javax.swing.JDialog {
     private Cliente clienteOriginal; // Para almacenar el cliente original y el ID
 
     // Modifica el constructor para que reciba un objeto Cliente
-    public EditarCliente(Frame parent, Cliente cliente) {
+    public EditarCliente(java.awt.Frame parent, Cliente cliente) {
         super(parent, true); // Llama al constructor de JDialog, 'true' lo hace modal
         this.clienteOriginal = cliente;
         initComponents();
@@ -48,28 +48,6 @@ public class EditarCliente extends javax.swing.JDialog {
     public boolean isDatosModificados() {
             return datosModificados;
 }
-
-       /* public String getNombre() {
-            return nombreEditado.getText().trim();
-}
-
-        public String getTelefono() {
-            return telefonoEditado.getText().trim();
-}
-
-        public String getDireccion() {
-            return direccEditado.getText().trim();
-}
-
-        public String getObservaciones() {
-            return observEditado.getText().trim();
-}
-
-        public boolean getEstatus() {
-            return estatusEditado.isSelected();
-}*/
-
-        
     
   
     @SuppressWarnings("unchecked")

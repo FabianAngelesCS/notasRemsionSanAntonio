@@ -29,7 +29,7 @@ public class ProductoDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, nombre);
             ps.setString(2, caracteristicas);
-            ps.setInt(3, precio);
+            ps.setDouble(3, precio);
             ps.setInt(4, cantidad);
             ps.executeUpdate();
             conn.close();
@@ -40,28 +40,54 @@ public class ProductoDAO {
         }
     }
     
-    /*public boolean actualizarProducto(Producto producto){
+    public boolean actualizarProducto(Producto producto) {
         Conexion conexion = new Conexion();
-        Connection conn = null;
-        PreparedStatement ps = null;
-    
-        try {
-            conn = conexion.conectar();
+        // Usamos try-with-resources para asegurar el cierre de Connection y PreparedStatement
+        try (Connection conn = conexion.conectar();
+             PreparedStatement ps = conn.prepareStatement(
+                 "UPDATE producto SET nombre = ?, caracteristicas = ?, precio = ?, " +
+                 "cantidad = ?, estatus = ? WHERE id_producto = ?")) { // <-- Coma extra removida
+            
             if (conn == null) {
                 System.out.println("Error: Conexión a la base de datos fallida.");
                 return false;
             }
-            conn.setAutoCommit(false); // Desactivar autocommit para manejo de transacciones
             
-            String sql = "UPDATE producto SET nombre = ?, caracteristicas = ?, precio = ?, " +
-                         ", estatus = ?,cantidad = ? WHERE id_producto = ?";
-    
-            ps = conn.prepareStatement(sql);
+            // conn.setAutoCommit(false); // Opcional: si manejas transacciones complejas.
+                                        // Para un solo UPDATE, no es estrictamente necesario aquí.
+            
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getCaracteristicas());
-            ps.setInt(3, producto.getPrecio());
-            ps.setString(1, producto.getNombre());
-    }*/
+            ps.setDouble(3, producto.getPrecio()); // <-- Usar setDouble()
+            ps.setDouble(4, producto.getCantidad());
+            ps.setBoolean(5, producto.isEstatus());
+            ps.setInt(6, producto.getId_producto());
+            
+            int affectedRows = ps.executeUpdate();
+            // conn.commit(); // Opcional: si manejas transacciones
+            
+            if (affectedRows > 0) {
+                System.out.println("Producto " + producto.getId_producto() + " actualizado exitosamente.");
+                return true;
+            } else {
+                System.out.println("No se encontró el producto con ID " + producto.getId_producto() + " para actualizar.");
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar producto: " + e.getMessage());
+            e.printStackTrace(); // Útil para depuración
+            /*
+            // Bloque rollback si se usa conn.setAutoCommit(false);
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                System.out.println("Error al revertir transacción: " + ex.getMessage());
+            }
+            */
+            return false;
+        }
+        // Con try-with-resources, el bloque finally para cerrar recursos ya no es necesario
+    }
     
     public List<Producto> obtenerProductos() {
         List<Producto> lista = new ArrayList<>();
@@ -81,7 +107,7 @@ public class ProductoDAO {
                 c.setId_producto(rs.getInt("id_producto")); 
                 c.setNombre(rs.getString("nombre"));
                 c.setCaracteristicas(rs.getString("caracteristicas"));
-                c.setPrecio(rs.getInt("precio"));
+                c.setPrecio(rs.getDouble("precio"));
                 c.setCantidad(rs.getInt("cantidad"));
                 c.setEstatus(rs.getBoolean("estatus")); 
                 lista.add(c);

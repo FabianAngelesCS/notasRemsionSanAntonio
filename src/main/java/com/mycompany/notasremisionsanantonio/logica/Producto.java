@@ -4,7 +4,7 @@ package com.mycompany.notasremisionsanantonio.logica;
 public class Producto {
     private int id_producto;
     private String nombre;
-    private double precio; // <-- cambiado de int a double
+    private Double precio;
     private String caracteristicas;
     private double cantidad; // <-- cambiado de int a double
     private boolean estatus;
@@ -12,8 +12,8 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(int id_producto, String nombre, double precio, 
-            String caracteristicas, double cantidad, boolean estatus) {
+    public Producto(int id_producto, String nombre, Double precio, 
+            String caracteristicas, int cantidad, boolean estatus) {
         this.id_producto = id_producto;
         this.nombre = nombre;
         this.precio = precio;
@@ -38,11 +38,11 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public double getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
@@ -62,12 +62,13 @@ public class Producto {
         this.cantidad = cantidad;
     }
 
-    public boolean isEstatus() {
-        return estatus;
+    public void setEstatus(boolean estatus) {
+        
+        this.estatus = estatus; // Asigna el valor del parámetro al atributo de la clase
     }
 
-    public void setEstatus(boolean estatus) {
-        this.estatus = estatus;
+    public boolean isEstatus() {
+        return estatus;
     }
 
     @Override
