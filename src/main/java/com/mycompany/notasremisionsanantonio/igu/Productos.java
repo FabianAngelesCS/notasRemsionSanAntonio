@@ -198,11 +198,7 @@ public class Productos extends javax.swing.JFrame {
             editarColumn.setCellRenderer(new EditarBoton.Renderer());
             editarColumn.setCellEditor(new EditarBoton.Editor(
                     new JCheckBox(),
-                    filaSeleccionada -> { // <-- el parámetro 'filaSeleccionada' ahora es un Integer
-        // El 'id' que tenías antes ya no es necesario aquí, ya que estamos pasando la fila
-        // int id = fila; // Esto era confuso si 'id' era el id del producto o el índice de la fila
-
-        // VALIDACIÓN DE FILA (aunque el Editor ya debería asegurar que hay una fila válida)
+                    filaSeleccionada -> {
         if (filaSeleccionada < 0) {
             JOptionPane.showMessageDialog(this, "Seleccione un producto para editar", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -221,7 +217,7 @@ public class Productos extends javax.swing.JFrame {
             EditarProducto dialog = new EditarProducto(this, productoAeditar);
             dialog.setVisible(true);
 
-            // LÓGICA DESPUÉS DE QUE EL DIÁLOGO SE CIERRA (ya explicada en la respuesta anterior)
+            // LÓGICA DESPUÉS DE QUE EL DIÁLOGO SE CIERRA
             if (dialog.productoModificados()) {
                 Producto productoModificado = dialog.getProductoModificado();
                 if (productoModificado != null) {

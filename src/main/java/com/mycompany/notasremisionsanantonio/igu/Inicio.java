@@ -75,7 +75,7 @@ public class Inicio extends javax.swing.JFrame {
 
         verNotas.setBackground(new java.awt.Color(0, 204, 204));
         verNotas.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        verNotas.setText("VER NOTAS REMISIÓN");
+        verNotas.setText("IMPRIMIR NOTAS REMISIÓN");
         verNotas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         verNotas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         verNotas.addActionListener(new java.awt.event.ActionListener() {

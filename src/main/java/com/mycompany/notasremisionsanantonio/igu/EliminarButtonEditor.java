@@ -37,9 +37,15 @@ public class EliminarButtonEditor extends DefaultCellEditor {
         if (isPushed) {
             int confirm = JOptionPane.showConfirmDialog(table, "¿Seguro que deseas eliminar esta remisión?", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                int idRemision = (int) table.getValueAt(editingRow, 0); // columna 0 = ID
+                int idRemision = (int) table.getValueAt(editingRow, 0); 
                 eliminarRemisionDeBase(idRemision);
                 ((DefaultTableModel) table.getModel()).removeRow(editingRow);
+                // Actulizar vista de tabla. 
+                SwingUtilities.invokeLater(() -> {
+                    if (table.isEditing()) {
+                        table.getCellEditor().cancelCellEditing();
+                    }
+                });
             }
         }
         isPushed = false;

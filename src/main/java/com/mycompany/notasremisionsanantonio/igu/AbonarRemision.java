@@ -98,16 +98,10 @@ public class AbonarRemision extends javax.swing.JFrame {
                 return;
             }
 
-            try (Connection conn = new Conexion().conectar()) {
-                String insertSQL = "INSERT INTO abono_remision (id_remision, monto, fecha) VALUES (?, ?, NOW())";
-                try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
-                    stmt.setInt(1, idRemision);
-                    stmt.setDouble(2, abono);
-                    stmt.executeUpdate();
-                }
+            double abonado = 0.0;
 
-                // Revisar si ya se completó el total
-                double abonado = 0.0;
+            try (Connection conn = new Conexion().conectar()) {
+                // Obtener total abonado actual
                 String sqlAbonos = "SELECT SUM(monto) AS abonado FROM abono_remision WHERE id_remision = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(sqlAbonos)) {
                     stmt.setInt(1, idRemision);
@@ -117,21 +111,44 @@ public class AbonarRemision extends javax.swing.JFrame {
                     }
                 }
 
+                double restante = totalRemision - abonado;
+
+                // ⚠️ Validación: el abono no puede exceder el restante
+                if (abono > restante) {
+                    JOptionPane.showMessageDialog(this,
+                            "El monto del abono excede lo que falta por pagar ($" + String.format("%.2f", restante) + ").\n" +
+                            "Por favor, ajuste el abono.");
+                    return;
+                }
+
+                // Insertar abono
+                String insertSQL = "INSERT INTO abono_remision (id_remision, monto, fecha) VALUES (?, ?, NOW())";
+                try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
+                    stmt.setInt(1, idRemision);
+                    stmt.setDouble(2, abono);
+                    stmt.executeUpdate();
+                }
+
+                // Recalcular lo abonado tras este abono
+                abonado += abono;
+
                 if (abonado >= totalRemision) {
                     String updateSQL = "UPDATE remision SET pagada = 1 WHERE id_remision = ?";
                     try (PreparedStatement stmt = conn.prepareStatement(updateSQL)) {
                         stmt.setInt(1, idRemision);
                         stmt.executeUpdate();
                     }
+
                     if (listener != null) {
-                        listener.onRemisionPagada(idRemision); 
+                        listener.onRemisionPagada(idRemision);
                     }
+
                     JOptionPane.showMessageDialog(this, "Remisión pagada en su totalidad.");
-                    dispose(); // Cierra esta ventana
+                    dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Abono registrado.");
                     txtAbono.setText("");
-                    cargarTotalYRestante(); // refresca el monto restante
+                    cargarTotalYRestante(); // Refresca el monto restante
                 }
             }
 
