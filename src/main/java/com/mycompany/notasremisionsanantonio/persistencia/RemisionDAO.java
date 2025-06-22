@@ -17,7 +17,7 @@ public class RemisionDAO {
 
             stmt.setInt(1, idCliente);
             stmt.setDate(2, new java.sql.Date(fecha.getTime()));
-            stmt.setString(3, folio);
+            stmt.setString(3, folio); // El folio es un número como texto: "1", "2", ..., "99999"
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
@@ -44,25 +44,45 @@ public class RemisionDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }   
-    
+    }
+
     public void marcarComoImpresa(int idRemision) {
-            String sql = "UPDATE remision SET impresa = 1 WHERE id_remision = ?";
+        String sql = "UPDATE remision SET impresa = 1 WHERE id_remision = ?";
 
-            try (Connection conn = new Conexion().conectar();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = new Conexion().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setInt(1, idRemision);
-                int filasAfectadas = stmt.executeUpdate();
+            stmt.setInt(1, idRemision);
+            int filasAfectadas = stmt.executeUpdate();
 
-                if (filasAfectadas == 0) {
-                    throw new SQLException("No se encontró la remisión con ID: " + idRemision);
-                }
-
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                javax.swing.JOptionPane.showMessageDialog(null,
-                    "Error al marcar como impresa: " + ex.getMessage());
+            if (filasAfectadas == 0) {
+                throw new SQLException("No se encontró la remisión con ID: " + idRemision);
             }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Error al marcar como impresa: " + ex.getMessage());
+        }
+    }
+
+    // ✅ Nuevo método para obtener el último número de folio como entero
+    public int obtenerUltimoNumeroFolio() {
+        int ultimoFolio = 0;
+        String sql = "SELECT folio FROM remision ORDER BY CAST(folio AS UNSIGNED) DESC LIMIT 1";
+
+        try (Connection conn = new Conexion().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                String folioStr = rs.getString("folio");
+                ultimoFolio = Integer.parseInt(folioStr);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ultimoFolio;
     }
 }

@@ -448,6 +448,8 @@ public class AgregarRemision extends javax.swing.JFrame {
         }
 
         String folio = generarFolio();
+        if (folio == null) return; // si alcanzó el límite de 99999
+
         RemisionDAO remisionDAO = new RemisionDAO();
         int idRemision = remisionDAO.insertarRemision(cliente.getId_cliente(), fecha, folio);
 
@@ -473,7 +475,16 @@ public class AgregarRemision extends javax.swing.JFrame {
     }//GEN-LAST:event_cantidadActionPerformed
     
     private String generarFolio() {
-        return "FOL-" + System.currentTimeMillis();
+        RemisionDAO remisionDAO = new RemisionDAO();
+        int ultimoNumero = remisionDAO.obtenerUltimoNumeroFolio();
+        int nuevoNumero = ultimoNumero + 1;
+
+        if (nuevoNumero > 99999) {
+            JOptionPane.showMessageDialog(this, "Se alcanzó el límite máximo de folios (99999).", "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        return String.valueOf(nuevoNumero); // Convierte a texto sin ceros ni prefijo
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
