@@ -70,7 +70,7 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
                 double total = rs.getDouble("total");
                 int id_remision = rs.getInt("id_remision");
 
-                modelo.addRow(new Object[]{ folio, cliente, fecha, total, "Abonar"});
+                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total, "Eliminar", "Abonar"});
             }
 
         } catch (SQLException ex) {
@@ -82,8 +82,8 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
     }
 
     private void configurarBotonesTabla() {
-        //remisionesPendientes.getColumn("Eliminar").setCellRenderer(new EliminarButtonRenderer());
-       // remisionesPendientes.getColumn("Eliminar").setCellEditor(new EliminarButtonEditor(new JCheckBox(), remisionesPendientes));
+        remisionesPendientes.getColumn("Eliminar").setCellRenderer(new EliminarButtonRenderer());
+        remisionesPendientes.getColumn("Eliminar").setCellEditor(new EliminarButtonEditor(new JCheckBox(), remisionesPendientes));
         
         remisionesPendientes.getColumn("Abonar").setCellRenderer(new AbonarButtonRenderer());
         remisionesPendientes.getColumn("Abonar").setCellEditor(new AbonarButtonEditor(new JCheckBox(), remisionesPendientes));
@@ -91,9 +91,9 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
         remisionesPendientes.getColumn("Ver Abonos").setCellRenderer(new VerAbonosButtonRenderer());
         remisionesPendientes.getColumn("Ver Abonos").setCellEditor(new VerAbonosButtonEditor(new JCheckBox(), remisionesPendientes, this));
 
-        //remisionesPendientes.getColumnModel().getColumn(0).setMinWidth(0);
-       // remisionesPendientes.getColumnModel().getColumn(0).setMaxWidth(0);
-       // remisionesPendientes.getColumnModel().getColumn(0).setWidth(0);
+        remisionesPendientes.getColumnModel().getColumn(0).setMinWidth(0);
+        remisionesPendientes.getColumnModel().getColumn(0).setMaxWidth(0);
+        remisionesPendientes.getColumnModel().getColumn(0).setWidth(0);
 
     }
 
@@ -113,7 +113,7 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("NOTAS PENDIENTES POR PAGAR DE:");
+        jLabel1.setText("PENDIENTES POR PAGAR DE:");
 
         nombreCliente.setBackground(new java.awt.Color(153, 255, 255));
         nombreCliente.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -121,13 +121,13 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
 
         remisionesPendientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "No. Folio", "Cliente", "Fecha", "Importe Total", "Abonar", "Ver Abonos"
+                "ID Remision", "No. Folio", "Cliente", "Fecha", "Importe Total", "Eliminar", "Abonar", "Ver Abonos"
             }
         ));
         jScrollPane1.setViewportView(remisionesPendientes);

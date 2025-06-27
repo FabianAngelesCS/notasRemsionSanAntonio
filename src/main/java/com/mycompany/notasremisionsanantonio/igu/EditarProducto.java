@@ -4,7 +4,6 @@
  */
 package com.mycompany.notasremisionsanantonio.igu;
 import com.mycompany.notasremisionsanantonio.logica.Producto;
-import com.mycompany.notasremisionsanantonio.persistencia.ProductoDAO;
 import javax.swing.JOptionPane;
 
 /**
@@ -44,20 +43,22 @@ public class EditarProducto extends javax.swing.JDialog {
     
         public Producto getProductoModificado(){
             Producto productoModificado = new Producto();
-
-    // No necesitas try-catch aquí para NumberFormatException si validarCampos() ya lo manejó
-    // Pero necesitas obtener los valores de texto y convertirlos
-    String precioText = precioEdit.getText().trim().replace(",", "."); // Limpiar y reemplazar coma
-    String cantidadText = cantidadEdit.getText().trim();
-
-    productoModificado.setId_producto(productoOriginal.getId_producto());
-    productoModificado.setNombre(productoEdit.getText().trim().toUpperCase());
-    productoModificado.setPrecio(Double.parseDouble(precioText)); // Convertir sin temor (si validarCampos() fue true)
-    productoModificado.setCaracteristicas(caracteristicasEdit.getText().trim().toUpperCase());
-    productoModificado.setEstatus(estatusEdit.isSelected());
-    productoModificado.setCantidad(Integer.parseInt(cantidadText)); // Convertir sin temor
-
-    return productoModificado;
+            try {
+            productoModificado.setId_producto(productoOriginal.getId_producto());
+            productoModificado.setNombre(productoEdit.getText().trim());
+            productoModificado.setPrecio(Double.parseDouble(precioEdit.getText().trim()));
+            productoModificado.setCaracteristicas(caracteristicasEdit.getText().trim());
+            productoModificado.setEstatus(estatusEdit.isSelected());
+            productoModificado.setCantidad(Integer.parseInt(cantidadEdit.getText().trim()));
+            }catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error de formato en Precio o Cantidad. Por favor, ingrese valores numéricos válidos.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
+            // Si hay un error de formato, no podemos construir el objeto correctamente.
+            // Una opción es relanzar la excepción, o devolver null, o simplemente
+            // dejar que 'validarCampos()' lo maneje si lo extiendes.
+            return null; // O devolver el productoOriginal sin cambios si prefieres
+        }
+            
+            return productoModificado;
         }
         
         public boolean productoModificados(){
@@ -238,27 +239,12 @@ public class EditarProducto extends javax.swing.JDialog {
     }//GEN-LAST:event_estatusEditActionPerformed
 
     private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
-      // 1. Primero, valida todos los campos
-    if (!validarCampos()) {
-        return; // Si la validación falla, sale del método. El error ya se mostró.
-    }
-
-    // 2. Si la validación fue exitosa, entonces puedes obtener el objeto Producto modificado
-    // y sabes que las conversiones numéricas no fallarán.
-    Producto productoActualizado = getProductoModificado();
-
-    // 3. Proceder a actualizar en la base de datos
-    ProductoDAO productoDAO = new ProductoDAO(); // Asegúrate de que este DAO esté inicializado
-    boolean exito = productoDAO.actualizarProducto(productoActualizado);
-
-    if (exito) {
-        JOptionPane.showMessageDialog(this, "¡Producto actualizado correctamente!");
-        this.productoModificados = true; // Variable para tu callback/actualización de tabla
-        this.dispose(); // Cierra la ventana de edición
-    } else {
-        JOptionPane.showMessageDialog(this, "Error al actualizar el producto en la base de datos.",
-                                       "Error de Actualización", JOptionPane.ERROR_MESSAGE);
-    }
+       if (validarCampos()){
+           Producto productoConCambios = getProductoModificado();
+           if (productoConCambios != null) {
+           this.productoModificados =true;
+           dispose();}
+       }
     }//GEN-LAST:event_botonGuardarActionPerformed
 
     private void botonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCancelarActionPerformed
@@ -277,32 +263,10 @@ public class EditarProducto extends javax.swing.JDialog {
         return false;
     } 
     
-    String precioText = precioEdit.getText().trim();
-    if (precioText.isEmpty()) {
-        mostrarError("El precio es obligatorio.");
+    if (precioEdit.getText().trim().isEmpty()) {
+        mostrarError("Precio es obligatorio");
         return false;
     }
-    // Reemplazar coma por punto si el usuario usó coma
-    precioText = precioText.replace(",", ".");
-    try {
-        Double.parseDouble(precioText);
-    } catch (NumberFormatException e) {
-        mostrarError("Error: El precio debe ser un número válido (ej. 19.99).");
-        return false;
-    }
-    
-    String cantidadText = cantidadEdit.getText().trim();
-    if (cantidadText.isEmpty()) {
-        mostrarError("La cantidad es obligatoria.");
-        return false;
-    }
-    try {
-        Integer.parseInt(cantidadText);
-    } catch (NumberFormatException e) {
-        mostrarError("Error: La cantidad debe ser un número entero válido (ej. 5).");
-        return false;
-    }
-
         return true;
     }
     private void mostrarError(String mensaje) {

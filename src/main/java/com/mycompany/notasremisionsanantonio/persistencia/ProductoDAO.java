@@ -15,7 +15,7 @@ public class ProductoDAO {
     
     
     public boolean agregarProducto(String nombre, String caracteristicas, 
-            Double precio, int cantidad) {
+            int precio, int cantidad) {
         Conexion conexion = new Conexion();
         Connection conn = conexion.conectar();
 
@@ -46,7 +46,7 @@ public class ProductoDAO {
         try (Connection conn = conexion.conectar();
              PreparedStatement ps = conn.prepareStatement(
                  "UPDATE producto SET nombre = ?, caracteristicas = ?, precio = ?, " +
-                 "cantidad = ?, estatus = ? WHERE id_producto = ?")) { 
+                 "cantidad = ?, estatus = ? WHERE id_producto = ?")) { // <-- Coma extra removida
             
             if (conn == null) {
                 System.out.println("Error: Conexión a la base de datos fallida.");

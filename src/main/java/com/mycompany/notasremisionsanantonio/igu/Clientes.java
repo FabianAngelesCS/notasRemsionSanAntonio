@@ -278,6 +278,21 @@ public class Clientes extends javax.swing.JFrame {
         }
     }
     
+    /*public void actualizarEstatusEnTabla(int idCliente, boolean nuevoEstatus) {
+        for (int i = 0; i < TablaClientes.getRowCount(); i++) {
+            int idFila = Integer.parseInt(TablaClientes.getValueAt(i, 0).toString());
+            if (idFila == idCliente) {
+                // Actualiza el modelo de la tabla
+                TablaClientes.setValueAt(nuevoEstatus ? "Desactivar" : "Activar", i, 5);
+
+                // Forzar repintado de esa celda
+                TablaClientes.repaint(TablaClientes.getCellRect(i, 5, true));
+                break;
+            }
+        }
+    }*/
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TablaClientes;
     private javax.swing.JButton agregarCliente;

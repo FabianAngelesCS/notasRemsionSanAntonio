@@ -53,9 +53,8 @@ public class AgregarCliente extends javax.swing.JFrame {
         jTextField1.setBackground(new java.awt.Color(204, 204, 204));
         jTextField1.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jTextField1.setText("NOMBRE COMPLETO:");
-        jTextField1.setActionCommand("null");
+        jTextField1.setActionCommand(null);
         jTextField1.setBorder(null);
-        jTextField1.setFocusable(false);
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
@@ -67,8 +66,6 @@ public class AgregarCliente extends javax.swing.JFrame {
         jTextField2.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jTextField2.setText("NÚMERO TELÉFONO:");
         jTextField2.setBorder(null);
-        jTextField2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jTextField2.setFocusable(false);
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField2ActionPerformed(evt);
@@ -80,7 +77,6 @@ public class AgregarCliente extends javax.swing.JFrame {
         jTextField3.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jTextField3.setText("DIRECCIÓN:");
         jTextField3.setBorder(null);
-        jTextField3.setFocusable(false);
         jTextField3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField3ActionPerformed(evt);
@@ -92,7 +88,6 @@ public class AgregarCliente extends javax.swing.JFrame {
         jTextField4.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jTextField4.setText("OBSERVACIONES:");
         jTextField4.setBorder(null);
-        jTextField4.setFocusable(false);
         jTextField4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField4ActionPerformed(evt);
@@ -214,6 +209,10 @@ public class AgregarCliente extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
@@ -227,10 +226,10 @@ public class AgregarCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void guardarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarClienteActionPerformed
-        String nombre = nombreCliente.getText().toUpperCase();
+        String nombre = nombreCliente.getText();
         String telefono = telefonoCliente.getText();
-        String direccion = direccioncliente.getText().toUpperCase();
-        String observaciones = observacionesCliente.getText().toUpperCase();
+        String direccion = direccioncliente.getText();
+        String observaciones = observacionesCliente.getText();
 
         ClienteDAO clienteDAO = new ClienteDAO();
         boolean exito = clienteDAO.agregarCliente(nombre, telefono, direccion, observaciones);
@@ -238,8 +237,6 @@ public class AgregarCliente extends javax.swing.JFrame {
         if (exito) {
             javax.swing.JOptionPane.showMessageDialog(this, "Cliente guardado correctamente.");
             limpiarActionPerformed(evt);
-            
-            ventanaClientes.cargarClientes();
             // mostrar la ventana Clientes de nuevo y cerrar esta
             ventanaClientes.setVisible(true);
             this.dispose();
@@ -262,10 +259,6 @@ public class AgregarCliente extends javax.swing.JFrame {
     private void nombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreClienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_nombreClienteActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField direccioncliente;
