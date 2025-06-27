@@ -84,7 +84,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="24" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="PENDIENTES POR PAGAR DE:"/>
+            <Property name="text" type="java.lang.String" value="NOTAS PENDIENTES POR PAGAR DE:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="nombreCliente">
@@ -110,29 +110,17 @@
             <Component class="javax.swing.JTable" name="remisionesPendientes">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="8" rowCount="4">
-                    <Column editable="true" title="ID Remision" type="java.lang.Object"/>
+                  <Table columnCount="6" rowCount="4">
                     <Column editable="true" title="No. Folio" type="java.lang.Object"/>
                     <Column editable="true" title="Cliente" type="java.lang.Object"/>
                     <Column editable="true" title="Fecha" type="java.lang.Object"/>
                     <Column editable="true" title="Importe Total" type="java.lang.Object"/>
-                    <Column editable="true" title="Eliminar" type="java.lang.Object"/>
                     <Column editable="true" title="Abonar" type="java.lang.Object"/>
                     <Column editable="true" title="Ver Abonos" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>

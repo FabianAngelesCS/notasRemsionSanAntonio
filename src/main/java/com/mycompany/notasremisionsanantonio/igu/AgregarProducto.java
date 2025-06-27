@@ -1,6 +1,7 @@
 
 package com.mycompany.notasremisionsanantonio.igu;
 import com.mycompany.notasremisionsanantonio.persistencia.ProductoDAO;
+import javax.swing.JOptionPane;
 
 
 public class AgregarProducto extends javax.swing.JFrame {
@@ -210,34 +211,56 @@ public class AgregarProducto extends javax.swing.JFrame {
     }//GEN-LAST:event_limpiarProductoActionPerformed
 
     private void guardarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarProductoActionPerformed
-        String producto = nombreProducto.getText();
-        String caracteristicas = caracteristicasProducto.getText();
-        String precio = precioProducto.getText();
-        String cantidad = cantidadProducto.getText();
+        String producto = nombreProducto.getText().toUpperCase();
+    String caracteristicas = caracteristicasProducto.getText().toUpperCase();
+    String precioStr = precioProducto.getText();   // Usamos un nuevo nombre para la variable String
+    String cantidadStr = cantidadProducto.getText(); // Usamos un nuevo nombre para la variable String
 
-        ProductoDAO productoDAO = new ProductoDAO();
-        boolean exito = productoDAO.agregarProducto(
-            producto, 
+    double precio = 0.0; // Inicializamos con un valor predeterminado
+    int cantidad = 0;    // Inicializamos con un valor predeterminado
+
+    // --- Manejo de la conversión del precio ---
+    try {
+        // Reemplazar la coma por un punto si está presente, para asegurar el parseo correcto del decimal
+        precioStr = precioStr.replace(",", "."); // Esto maneja si el usuario usa coma en lugar de punto
+        precio = Double.parseDouble(precioStr);
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Error: El precio ingresado no es un número válido. Por favor, use solo números y un punto para decimales (ej. 19.99).",
+                "Error de Formato", JOptionPane.ERROR_MESSAGE);
+        return; // Detenemos la ejecución del método si el precio es inválido
+    }
+
+    // --- Manejo de la conversión de la cantidad ---
+    try {
+        cantidad = Integer.parseInt(cantidadStr);
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+                "Error: La cantidad ingresada no es un número entero válido.",
+                "Error de Formato", JOptionPane.ERROR_MESSAGE);
+        return; // Detenemos la ejecución del método si la cantidad es inválida
+    }
+
+    // --- Continuar con el guardado si las conversiones fueron exitosas ---
+    ProductoDAO productoDAO = new ProductoDAO();
+    boolean exito = productoDAO.agregarProducto(
+            producto,
             caracteristicas,
-            Integer.parseInt(precio),
-            Integer.parseInt(cantidad)
-        );
+            precio, // Ahora usando el double ya parseado
+            cantidad // Ahora usando el int ya parseado
+    );
 
-        if (exito) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Producto guardado correctamente.");
-
-            // 🔄 Recargar la tabla en la ventana de productos
+    if (exito) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Producto guardado correctamente.");
+        // 🔄 Recargar la tabla en la ventana de productos
+        if (ventanaProductos != null) { // Agrega una verificación de nulidad por seguridad
             ventanaProductos.cargarProductosDesdeBD();
-
-            // Mostrar la ventana anterior por si la habías ocultado
-            ventanaProductos.setVisible(true);
-
-            // Cerrar esta ventana
-            this.dispose();
-
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar el producto.");
+            ventanaProductos.setVisible(true); // Mostrar la ventana anterior
         }
+        this.dispose(); // Cerrar esta ventana
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error al guardar el producto.");
+    }
     }//GEN-LAST:event_guardarProductoActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

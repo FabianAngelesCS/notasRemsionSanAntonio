@@ -226,7 +226,7 @@ public class Productos extends javax.swing.JFrame {
                         boolean exito = productoDAO.actualizarProducto(productoModificado);
 
                         if (exito) {
-                            JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            //JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                             // Actualizar la fila en la tabla visualmente
                             modelo.setValueAt(productoModificado.getNombre(), filaSeleccionada, 1);
                             modelo.setValueAt(productoModificado.getCaracteristicas(), filaSeleccionada, 2);

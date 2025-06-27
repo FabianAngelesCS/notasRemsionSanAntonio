@@ -6,7 +6,7 @@ public class Producto {
     private String nombre;
     private Double precio;
     private String caracteristicas;
-    private double cantidad; // <-- cambiado de int a double
+    private int cantidad;
     private boolean estatus;
 
     public Producto() {
@@ -54,11 +54,11 @@ public class Producto {
         this.caracteristicas = caracteristicas;
     }
 
-    public double getCantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(double cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 
