@@ -46,7 +46,7 @@ public class GeneradorPDF {
         layoutTabla.setSpacingBefore(10);
         layoutTabla.setSpacingAfter(10);
         layoutTabla.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
-        layoutTabla.setWidths(new float[]{1f, 0.01f, 1f});
+        layoutTabla.setWidths(new float[]{1f, 0.1f, 1f});
 
         PdfPCell nota1 = new PdfPCell(generarNota(idRemision));
         PdfPCell espacio = new PdfPCell();
@@ -126,11 +126,11 @@ public class GeneradorPDF {
     }
 
     private static PdfPTable generarNota(int idRemision) throws Exception {
-        PdfPTable contenedor = new PdfPTable(1);
+        PdfPTable contenedor = new PdfPTable(1);    
         contenedor.setWidthPercentage(100);
         Font fuenteFila = FontFactory.getFont(FontFactory.HELVETICA, 8);
 
-        Paragraph encabezado = new Paragraph("PLASTICOS SAN ANTONIO", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9));
+        Paragraph encabezado = new Paragraph("PLASTICOS Y ALUMINIO SAN ANTONIO", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9));
         encabezado.setAlignment(Element.ALIGN_CENTER);
         contenedor.addCell(celdaSinBorde(encabezado));
         contenedor.addCell(celdaSinBorde(new Paragraph(" ")));
@@ -154,27 +154,46 @@ public class GeneradorPDF {
             }
         }
 
-        PdfPTable datosCabecera = new PdfPTable(4);
+        PdfPTable datosCabecera = new PdfPTable(1);  // Contenedor principal
         datosCabecera.setWidthPercentage(100);
-        datosCabecera.setWidths(new float[]{2f, 5f, 2f, 3f});
 
         Font fontCab = FontFactory.getFont(FontFactory.HELVETICA, 8);
 
-        datosCabecera.addCell(celdaConBorde("No. Cliente", fontCab));
-        datosCabecera.addCell(celdaConBorde(idCliente, fontCab));
-        datosCabecera.addCell(celdaConBorde("Nombre", fontCab));
-        datosCabecera.addCell(celdaConBorde(cliente, fontCab));
+        // Fila 1: Nombre cliente (etiqueta + valor)
+        PdfPTable filaNombre = new PdfPTable(2);
+        filaNombre.setWidthPercentage(100);
+        filaNombre.setWidths(new float[]{1.8f, 5.2f});
 
-        datosCabecera.addCell(celdaConBorde("No. de Nota", fontCab));
-        datosCabecera.addCell(celdaConBorde(folio, fontCab));
-        datosCabecera.addCell(celdaConBorde("Fecha", fontCab));
-        datosCabecera.addCell(celdaConBorde(fecha, fontCab));
+        filaNombre.addCell(celdaConBorde("Nombre\u00A0cliente", fontCab));
+        filaNombre.addCell(celdaConBorde(cliente, fontCab));
+
+        // Añadir filaNombre a la tabla contenedora
+        PdfPCell filaNombreCompleta = new PdfPCell(filaNombre);
+        filaNombreCompleta.setBorder(PdfPCell.NO_BORDER);
+        datosCabecera.addCell(filaNombreCompleta);
+
+        // Fila 2: tabla con 6 columnas horizontales (3 etiquetas + 3 valores)
+        PdfPTable fila2 = new PdfPTable(6);
+        fila2.setWidthPercentage(100);
+        fila2.setWidths(new float[]{1.2f, 1.0f, 1.5f, 0.8f, 1.2f, 2.3f});
+
+        fila2.addCell(celdaConBorde("No.\u00A0Nota", fontCab));
+        fila2.addCell(celdaConBorde(folio, fontCab));
+        fila2.addCell(celdaConBorde("No.\u00A0Cliente", fontCab));
+        fila2.addCell(celdaConBorde(idCliente, fontCab));
+        fila2.addCell(celdaConBorde("Fecha", fontCab));
+        fila2.addCell(celdaConBorde(fecha, fontCab));
+
+        // Insertar la fila2 como una celda dentro del contenedor
+        PdfPCell fila2Completa = new PdfPCell(fila2);
+        fila2Completa.setBorder(PdfPCell.NO_BORDER);
+        datosCabecera.addCell(fila2Completa);
 
         contenedor.addCell(celdaSinBorde(datosCabecera));
 
         PdfPTable tabla = new PdfPTable(4);
         tabla.setWidthPercentage(100);
-        tabla.setWidths(new float[]{7f, 1.5f, 2f, 2f});
+        tabla.setWidths(new float[]{6f, 1.5f, 2f, 2.5f});
         tabla.setSpacingBefore(5);
 
         tabla.addCell(celdaEncabezadoConBorde("Producto"));
@@ -208,7 +227,8 @@ public class GeneradorPDF {
             }
         }
 
-        while (filas < 13) {
+        int filasMinimas = 16; // puedes ajustar este número hasta lograr media hoja visual
+        while (filas < filasMinimas) {
             for (int i = 0; i < 4; i++) {
                 tabla.addCell(celdaConBorde(" ", fuenteFila));
             }
