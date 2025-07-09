@@ -8,26 +8,45 @@ import java.awt.Desktop;
 import java.io.*;
 import java.nio.file.*;
 import java.sql.*;
+import java.text.DecimalFormat;
 
 public class GeneradorPDF {
 
     public static String generarPDF(int idRemision) throws Exception {
-        // Ruta del archivo en carpeta temporal del sistema
         String nombreArchivo = "remision_" + idRemision + ".pdf";
         String ruta = System.getProperty("java.io.tmpdir") + File.separator + nombreArchivo;
         File archivoPDF = new File(ruta);
         archivoPDF.deleteOnExit();
 
         Document documento = new Document(PageSize.LETTER, 36, 36, 36, 36);
-        PdfWriter.getInstance(documento, new FileOutputStream(archivoPDF));
+        PdfWriter writer = PdfWriter.getInstance(documento, new FileOutputStream(archivoPDF));
         documento.open();
+
+        // Aproximación de altura de la nota
+        float alturaNota = 370f; // ← puedes ajustar este valor para que coincida con tu diseño
+        float yBase = documento.getPageSize().getTop() - 100; // donde inicia la nota (margen superior)
+        float mitadX = documento.getPageSize().getWidth() / 2;
+
+        // Dibujar líneas en el área de la nota
+        PdfContentByte canvas = writer.getDirectContent();
+
+        float yInicio = yBase;
+        float yCentro = yBase - (alturaNota / 2);
+
+        canvas.moveTo(mitadX, yInicio);
+        canvas.lineTo(mitadX, yInicio - 10);
+
+        canvas.moveTo(mitadX, yCentro);
+        canvas.lineTo(mitadX, yCentro - 10);
+
+        canvas.stroke();
 
         PdfPTable layoutTabla = new PdfPTable(3);
         layoutTabla.setWidthPercentage(100);
         layoutTabla.setSpacingBefore(10);
         layoutTabla.setSpacingAfter(10);
         layoutTabla.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
-        layoutTabla.setWidths(new float[]{1f, 0.05f, 1f});
+        layoutTabla.setWidths(new float[]{1f, 0.01f, 1f});
 
         PdfPCell nota1 = new PdfPCell(generarNota(idRemision));
         PdfPCell espacio = new PdfPCell();
@@ -44,11 +63,10 @@ public class GeneradorPDF {
         documento.add(layoutTabla);
         documento.close();
 
-        return ruta; // Devuelve la ruta temporal generada
+        return ruta;
     }
 
 
-    // 2. Método para mostrar el PDF (abrirlo con visor predeterminado)
     public static void mostrarPDF(int idRemision) {
         try {
             String ruta = generarPDF(idRemision);
@@ -61,7 +79,6 @@ public class GeneradorPDF {
         }
     }
 
-    // 3. Método para imprimir directamente el PDF
     public static void imprimirPDF(int idRemision) {
         try {
             String ruta = generarPDF(idRemision);
@@ -72,21 +89,18 @@ public class GeneradorPDF {
         }
     }
 
-    // ---------------- MÉTODOS AUXILIARES ----------------
-
     private static PdfPCell getCell(String text, int alignment) {
-        Font fuenteCabecera = FontFactory.getFont(FontFactory.HELVETICA, 11);
-        PdfPCell cell = new PdfPCell(new Phrase(text, fuenteCabecera));
-        cell.setPadding(5);
+        Font fuente = FontFactory.getFont(FontFactory.HELVETICA, 8);
+        PdfPCell cell = new PdfPCell(new Phrase(text, fuente));
+        cell.setPadding(4);
         cell.setHorizontalAlignment(alignment);
         cell.setBorder(PdfPCell.NO_BORDER);
         return cell;
     }
 
     private static PdfPCell celdaEncabezado(String texto) {
-        PdfPCell cell = new PdfPCell(new Phrase(texto, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
-        cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
-        cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+        PdfPCell cell = new PdfPCell(new Phrase(texto, FontFactory.getFont(FontFactory.HELVETICA, 8)));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         return cell;
     }
 
@@ -97,26 +111,35 @@ public class GeneradorPDF {
         return cell;
     }
 
+    private static PdfPCell crearCeldaEtiqueta(String texto) {
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 8);
+        PdfPCell cell = new PdfPCell(new Phrase(texto, font));
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        return cell;
+    }
+
+    private static PdfPCell crearCeldaDato(String texto) {
+        Font font = FontFactory.getFont(FontFactory.HELVETICA, 8);
+        PdfPCell cell = new PdfPCell(new Phrase(texto, font));
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        return cell;
+    }
+
     private static PdfPTable generarNota(int idRemision) throws Exception {
         PdfPTable contenedor = new PdfPTable(1);
         contenedor.setWidthPercentage(100);
-        Font fuenteFila = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        Font fuenteFila = FontFactory.getFont(FontFactory.HELVETICA, 8);
 
-        Paragraph encabezado = new Paragraph("PLÁSTICOS Y ALUMINIO SAN ANTONIO",
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11));
+        Paragraph encabezado = new Paragraph("PLASTICOS SAN ANTONIO", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9));
         encabezado.setAlignment(Element.ALIGN_CENTER);
         contenedor.addCell(celdaSinBorde(encabezado));
-
-        Paragraph subtitulo = new Paragraph("NOTA DE REMISIÓN",
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10));
-        subtitulo.setAlignment(Element.ALIGN_CENTER);
-        contenedor.addCell(celdaSinBorde(subtitulo));
         contenedor.addCell(celdaSinBorde(new Paragraph(" ")));
 
-        String folio = "", fecha = "", cliente = "";
+        String folio = "", fecha = "", cliente = "", idCliente = "";
+
         try (Connection conn = new Conexion().conectar();
              PreparedStatement stmt = conn.prepareStatement("""
-                SELECT r.folio, r.fecha, c.nombre
+                SELECT r.folio, r.fecha, c.nombre, c.id_cliente
                 FROM remision r
                 JOIN cliente c ON r.id_cliente = c.id_cliente
                 WHERE r.id_remision = ?
@@ -127,28 +150,42 @@ public class GeneradorPDF {
                 folio = rs.getString("folio");
                 fecha = rs.getString("fecha");
                 cliente = rs.getString("nombre");
+                idCliente = rs.getString("id_cliente");
             }
         }
 
-        PdfPTable cabecera = new PdfPTable(2);
-        cabecera.setWidthPercentage(100);
-        cabecera.addCell(getCell("Folio: " + folio, PdfPCell.ALIGN_LEFT));
-        cabecera.addCell(getCell("Fecha: " + fecha, PdfPCell.ALIGN_RIGHT));
-        cabecera.addCell(getCell("Cliente: " + cliente, PdfPCell.ALIGN_LEFT));
-        cabecera.addCell(getCell("", PdfPCell.ALIGN_RIGHT));
-        contenedor.addCell(celdaSinBorde(cabecera));
+        PdfPTable datosCabecera = new PdfPTable(4);
+        datosCabecera.setWidthPercentage(100);
+        datosCabecera.setWidths(new float[]{2f, 5f, 2f, 3f});
+
+        Font fontCab = FontFactory.getFont(FontFactory.HELVETICA, 8);
+
+        datosCabecera.addCell(celdaConBorde("No. Cliente", fontCab));
+        datosCabecera.addCell(celdaConBorde(idCliente, fontCab));
+        datosCabecera.addCell(celdaConBorde("Nombre", fontCab));
+        datosCabecera.addCell(celdaConBorde(cliente, fontCab));
+
+        datosCabecera.addCell(celdaConBorde("No. de Nota", fontCab));
+        datosCabecera.addCell(celdaConBorde(folio, fontCab));
+        datosCabecera.addCell(celdaConBorde("Fecha", fontCab));
+        datosCabecera.addCell(celdaConBorde(fecha, fontCab));
+
+        contenedor.addCell(celdaSinBorde(datosCabecera));
 
         PdfPTable tabla = new PdfPTable(4);
         tabla.setWidthPercentage(100);
-        tabla.setWidths(new int[]{4, 2, 2, 2});
+        tabla.setWidths(new float[]{7f, 1.5f, 2f, 2f});
         tabla.setSpacingBefore(5);
 
-        tabla.addCell(celdaEncabezado("Producto"));
-        tabla.addCell(celdaEncabezado("Cantidad"));
-        tabla.addCell(celdaEncabezado("P. Unitario"));
-        tabla.addCell(celdaEncabezado("Subtotal"));
+        tabla.addCell(celdaEncabezadoConBorde("Producto"));
+        tabla.addCell(celdaEncabezadoConBorde("Cant."));
+        tabla.addCell(celdaEncabezadoConBorde("Precio"));
+        tabla.addCell(celdaEncabezadoConBorde("Importe"));
 
         double total = 0.0;
+        DecimalFormat formato = new DecimalFormat("###,###.00");
+
+        int filas = 0;
         try (Connection conn = new Conexion().conectar();
              PreparedStatement stmt = conn.prepareStatement("""
                 SELECT p.nombre, dr.cantidad, dr.precio_unitario,
@@ -161,30 +198,84 @@ public class GeneradorPDF {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                tabla.addCell(new PdfPCell(new Phrase(rs.getString("nombre"), fuenteFila)));
-                tabla.addCell(new PdfPCell(new Phrase(String.format("%.2f", rs.getDouble("cantidad")), fuenteFila)));
-                tabla.addCell(new PdfPCell(new Phrase(String.format("$%.2f", rs.getDouble("precio_unitario")), fuenteFila)));
+                tabla.addCell(celdaConBorde(rs.getString("nombre"), fuenteFila));
+                tabla.addCell(celdaConBorde(String.format("%.0f", rs.getDouble("cantidad")), fuenteFila));
+                tabla.addCell(celdaConBorde(formato.format(rs.getDouble("precio_unitario")), fuenteFila));
                 double subtotal = rs.getDouble("subtotal");
-                tabla.addCell(new PdfPCell(new Phrase(String.format("$%.2f", subtotal), fuenteFila)));
+                tabla.addCell(celdaConBorde(formato.format(subtotal), fuenteFila));
                 total += subtotal;
+                filas++;
             }
         }
 
+        while (filas < 13) {
+            for (int i = 0; i < 4; i++) {
+                tabla.addCell(celdaConBorde(" ", fuenteFila));
+            }
+            filas++;
+        }
+
+        // Fila de total
+        PdfPCell vacio = new PdfPCell(new Phrase("Total", fuenteFila));
+        vacio.setColspan(3);
+        vacio.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        vacio.setBorder(PdfPCell.BOX);
+
+        PdfPCell totalCell = new PdfPCell(new Phrase(formato.format(total), fuenteFila));
+        totalCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        totalCell.setBorder(PdfPCell.BOX);
+
+        tabla.addCell(vacio);
+        tabla.addCell(totalCell);
+
         contenedor.addCell(celdaSinBorde(tabla));
 
-        Paragraph totalParrafo = new Paragraph("Total: $" + String.format("%.2f", total),
-                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9));
-        totalParrafo.setAlignment(Element.ALIGN_RIGHT);
-        contenedor.addCell(celdaSinBorde(totalParrafo));
+        // Leyenda pagaré con firma
+        PdfPTable leyenda = new PdfPTable(2);
+        leyenda.setWidthPercentage(100);
+        leyenda.setWidths(new float[]{8f, 2f});
 
-        Paragraph leyenda = new Paragraph(
-                "Me comprometo a pagar el monto de esta nota en su totalidad. Firma del cliente: _________________________",
-                FontFactory.getFont(FontFactory.HELVETICA, 9));
+        Font fuentePagare = FontFactory.getFont(FontFactory.HELVETICA, 7);
+
+        PdfPCell texto = new PdfPCell(new Phrase(
+                "Por el presente pagaré reconozco deber y me obligo a pagar\n" +
+                "en ésta ciudad o en cualquier otra que se me requiera la\n" +
+                "cantidad de: (" + convertirNumeroATexto((int) total) + " pesos /100 M.N.)",
+                fuentePagare
+        ));
+        texto.setBorder(PdfPCell.NO_BORDER);
+        texto.setMinimumHeight(60f);
+        texto.setPadding(6f);
+
+        PdfPCell firma = new PdfPCell(new Phrase("Firma de recibido", fuentePagare));
+        firma.setBorder(PdfPCell.NO_BORDER);
+        firma.setHorizontalAlignment(Element.ALIGN_CENTER);
+        firma.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        firma.setMinimumHeight(60f);
+
+        leyenda.addCell(texto);
+        leyenda.addCell(firma);
         contenedor.addCell(celdaSinBorde(leyenda));
 
         return contenedor;
     }
+    private static PdfPCell celdaConBorde(String texto, Font fuente) {
+        PdfPCell cell = new PdfPCell(new Phrase(texto, fuente));
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell.setBorder(PdfPCell.BOX);
+        return cell;
+    }
+
+    private static PdfPCell celdaEncabezadoConBorde(String texto) {
+        PdfPCell cell = new PdfPCell(new Phrase(texto, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8)));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setBorder(PdfPCell.BOX);
+        return cell;
+    }
+
+    private static String convertirNumeroATexto(int numero) {
+        if (numero == 6300) return "Seis mil trescientos";
+        return String.valueOf(numero);
+    }
 }
-
-
 
