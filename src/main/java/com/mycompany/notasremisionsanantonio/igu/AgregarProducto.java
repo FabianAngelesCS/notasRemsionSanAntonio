@@ -210,8 +210,8 @@ public class AgregarProducto extends javax.swing.JFrame {
     }//GEN-LAST:event_limpiarProductoActionPerformed
 
     private void guardarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarProductoActionPerformed
-        String producto = nombreProducto.getText();
-        String caracteristicas = caracteristicasProducto.getText();
+        String producto = nombreProducto.getText().toUpperCase();
+        String caracteristicas = caracteristicasProducto.getText().toUpperCase();
         String precio = precioProducto.getText();
         String cantidad = cantidadProducto.getText();
 
@@ -219,7 +219,7 @@ public class AgregarProducto extends javax.swing.JFrame {
         boolean exito = productoDAO.agregarProducto(
             producto, 
             caracteristicas,
-            Integer.parseInt(precio),
+            Double.parseDouble(precio),
             Integer.parseInt(cantidad)
         );
 

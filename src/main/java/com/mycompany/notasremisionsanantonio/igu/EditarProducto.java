@@ -23,8 +23,8 @@ public class EditarProducto extends javax.swing.JDialog {
         this.productoOriginal= producto;
         initComponents();
         
-        productoEdit.setText(producto.getNombre());
-        caracteristicasEdit.setText(producto.getCaracteristicas());
+        productoEdit.setText(producto.getNombre().toUpperCase());
+        caracteristicasEdit.setText(producto.getCaracteristicas().toUpperCase());
         precioEdit.setText(String.valueOf(producto.getPrecio()));
         estatusEdit.setSelected(producto.isEstatus());
         cantidadEdit.setText(String.valueOf(producto.getCantidad()));
@@ -45,9 +45,9 @@ public class EditarProducto extends javax.swing.JDialog {
             Producto productoModificado = new Producto();
             try {
             productoModificado.setId_producto(productoOriginal.getId_producto());
-            productoModificado.setNombre(productoEdit.getText().trim());
+            productoModificado.setNombre(productoEdit.getText().trim().toUpperCase());
             productoModificado.setPrecio(Double.parseDouble(precioEdit.getText().trim()));
-            productoModificado.setCaracteristicas(caracteristicasEdit.getText().trim());
+            productoModificado.setCaracteristicas(caracteristicasEdit.getText().trim().toUpperCase());
             productoModificado.setEstatus(estatusEdit.isSelected());
             productoModificado.setCantidad(Integer.parseInt(cantidadEdit.getText().trim()));
             }catch (NumberFormatException e) {

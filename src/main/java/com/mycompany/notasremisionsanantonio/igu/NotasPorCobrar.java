@@ -64,13 +64,14 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                int id_remision = rs.getInt("id_remision");
                 String folio = rs.getString("folio");
                 String cliente = rs.getString("nombre");
                 String fecha = rs.getString("fecha");
                 double total = rs.getDouble("total");
-                int id_remision = rs.getInt("id_remision");
+                
 
-                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total, "Eliminar", "Abonar"});
+                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total, "Abonar"});
             }
 
         } catch (SQLException ex) {
@@ -82,8 +83,8 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
     }
 
     private void configurarBotonesTabla() {
-        remisionesPendientes.getColumn("Eliminar").setCellRenderer(new EliminarButtonRenderer());
-        remisionesPendientes.getColumn("Eliminar").setCellEditor(new EliminarButtonEditor(new JCheckBox(), remisionesPendientes));
+        //remisionesPendientes.getColumn("Eliminar").setCellRenderer(new EliminarButtonRenderer());
+       // remisionesPendientes.getColumn("Eliminar").setCellEditor(new EliminarButtonEditor(new JCheckBox(), remisionesPendientes));
         
         remisionesPendientes.getColumn("Abonar").setCellRenderer(new AbonarButtonRenderer());
         remisionesPendientes.getColumn("Abonar").setCellEditor(new AbonarButtonEditor(new JCheckBox(), remisionesPendientes));
@@ -113,7 +114,7 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("PENDIENTES POR PAGAR DE:");
+        jLabel1.setText("NOTAS PENDIENTES POR PAGAR DE:");
 
         nombreCliente.setBackground(new java.awt.Color(153, 255, 255));
         nombreCliente.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -121,13 +122,13 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
 
         remisionesPendientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID Remision", "No. Folio", "Cliente", "Fecha", "Importe Total", "Eliminar", "Abonar", "Ver Abonos"
+                "id", "No. Folio", "Cliente", "Fecha", "Importe Total", "Abonar", "Ver Abonos"
             }
         ));
         jScrollPane1.setViewportView(remisionesPendientes);

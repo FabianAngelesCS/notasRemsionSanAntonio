@@ -1,18 +1,11 @@
 package com.mycompany.notasremisionsanantonio.igu;
 
-///import com.mycompany.notasremisionsanantonio.logica.Cliente;
-//import com.mycompany.notasremisionsanantonio.persistencia.ClienteDAO;
-//import java.util.List;
-import javax.swing.table.DefaultTableModel;
+import java.util.List;
 import javax.swing.table.TableColumn;
 import com.mycompany.notasremisionsanantonio.igu.EstadoBoton;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import com.mycompany.notasremisionsanantonio.persistencia.Conexion;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import javax.swing.JCheckBox;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JCheckBox;
@@ -175,6 +168,7 @@ public class Clientes extends javax.swing.JFrame {
         pantallaAgregarCliente.setVisible(true);
         pantallaAgregarCliente.setLocationRelativeTo(null);
         this.setVisible(false);
+       
     }//GEN-LAST:event_agregarClienteActionPerformed
 
     public void cargarClientes() {
@@ -271,26 +265,15 @@ public class Clientes extends javax.swing.JFrame {
                     }
                 }
             ));
-
+          
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + e.getMessage());
         }
     }
     
-    /*public void actualizarEstatusEnTabla(int idCliente, boolean nuevoEstatus) {
-        for (int i = 0; i < TablaClientes.getRowCount(); i++) {
-            int idFila = Integer.parseInt(TablaClientes.getValueAt(i, 0).toString());
-            if (idFila == idCliente) {
-                // Actualiza el modelo de la tabla
-                TablaClientes.setValueAt(nuevoEstatus ? "Desactivar" : "Activar", i, 5);
-
-                // Forzar repintado de esa celda
-                TablaClientes.repaint(TablaClientes.getCellRect(i, 5, true));
-                break;
-            }
-        }
-    }*/
+     
+    
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

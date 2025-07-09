@@ -15,7 +15,7 @@ public class ProductoDAO {
     
     
     public boolean agregarProducto(String nombre, String caracteristicas, 
-            int precio, int cantidad) {
+            Double precio, int cantidad) {
         Conexion conexion = new Conexion();
         Connection conn = conexion.conectar();
 
@@ -59,7 +59,7 @@ public class ProductoDAO {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getCaracteristicas());
             ps.setDouble(3, producto.getPrecio()); // <-- Usar setDouble()
-            ps.setDouble(4, producto.getCantidad());
+            ps.setInt(4, producto.getCantidad());
             ps.setBoolean(5, producto.isEstatus());
             ps.setInt(6, producto.getId_producto());
             

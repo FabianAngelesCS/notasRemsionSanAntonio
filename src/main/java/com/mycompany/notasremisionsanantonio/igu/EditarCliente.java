@@ -17,10 +17,10 @@ public class EditarCliente extends javax.swing.JDialog {
         this.clienteOriginal = cliente;
         initComponents();
         
-        nombreEditado.setText(cliente.getNombre());
+        nombreEditado.setText(cliente.getNombre().toUpperCase());
         telefonoEditado.setText(cliente.getTelefono());
-        direccEditado.setText(cliente.getDireccion());
-        observEditado.setText(cliente.getObservaciones());
+        direccEditado.setText(cliente.getDireccion().toUpperCase());
+        observEditado.setText(cliente.getObservaciones().toUpperCase());
         estatusEditado.setSelected(cliente.isEstatus());
         
         botonCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -37,10 +37,10 @@ public class EditarCliente extends javax.swing.JDialog {
     public Cliente getClienteModificado() {
         Cliente clienteModificado = new Cliente();
         clienteModificado.setId_cliente(clienteOriginal.getId_cliente()); // Usa el ID original
-        clienteModificado.setNombre(nombreEditado.getText().trim());
+        clienteModificado.setNombre(nombreEditado.getText().trim().toUpperCase());
         clienteModificado.setTelefono(telefonoEditado.getText().trim());
-        clienteModificado.setDireccion(direccEditado.getText().trim());
-        clienteModificado.setObservaciones(observEditado.getText().trim());
+        clienteModificado.setDireccion(direccEditado.getText().trim().toUpperCase());
+        clienteModificado.setObservaciones(observEditado.getText().trim().toUpperCase());
         clienteModificado.setEstatus(estatusEditado.isSelected());
         return clienteModificado;
     }
