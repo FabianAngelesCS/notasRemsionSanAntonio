@@ -71,7 +71,7 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
                 double total = rs.getDouble("total");
                 
 
-                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total, "Abonar"});
+                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total,"Ver PDF", "Abonar"});
             }
 
         } catch (SQLException ex) {
@@ -85,6 +85,8 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
     private void configurarBotonesTabla() {
         //remisionesPendientes.getColumn("Eliminar").setCellRenderer(new EliminarButtonRenderer());
        // remisionesPendientes.getColumn("Eliminar").setCellEditor(new EliminarButtonEditor(new JCheckBox(), remisionesPendientes));
+        remisionesPendientes.getColumn("Ver PDF").setCellRenderer(new VerPDFButtonRenderer());
+        remisionesPendientes.getColumn("Ver PDF").setCellEditor(new VerPDFButtonEditor(new JCheckBox()));
         
         remisionesPendientes.getColumn("Abonar").setCellRenderer(new AbonarButtonRenderer());
         remisionesPendientes.getColumn("Abonar").setCellEditor(new AbonarButtonEditor(new JCheckBox(), remisionesPendientes));
@@ -122,13 +124,13 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
 
         remisionesPendientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "id", "No. Folio", "Cliente", "Fecha", "Importe Total", "Abonar", "Ver Abonos"
+                "id", "No. Folio", "Cliente", "Fecha", "Importe Total", "Ver PDF", "Abonar", "Ver Abonos"
             }
         ));
         jScrollPane1.setViewportView(remisionesPendientes);
