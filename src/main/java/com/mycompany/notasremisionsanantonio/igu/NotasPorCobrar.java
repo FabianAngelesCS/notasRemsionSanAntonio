@@ -14,32 +14,40 @@ import javax.swing.table.DefaultTableModel;
 public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoListener{
     
     private int idCliente;
-    private JFrame ventanaClientes;
+    private CreditoTotal ventanaCredito;
     
-    public NotasPorCobrar(int idCliente, String nombre, JFrame ventanaClientes) {
+    public NotasPorCobrar(int idCliente, String nombre, CreditoTotal ventanaCredito) {
         initComponents();
 
         this.idCliente = idCliente;
-        this.ventanaClientes = ventanaClientes;
+        this.ventanaCredito = ventanaCredito;
 
         nombreCliente.setText(nombre);
 
         cargarNotasRemision(idCliente);
 
-        this.ventanaClientes.setVisible(false);
+        this.ventanaCredito.setVisible(false);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                ventanaClientes.setVisible(true);
+                if (ventanaCredito != null) {
+                    ventanaCredito.cargarCreditoPorCliente(); // Actualiza la tabla
+                    ventanaCredito.setVisible(true);
+                    ventanaCredito.toFront(); // Lleva la ventana al frente
+                }
             }
         });
+
     }
 
     @Override
     public void onRemisionPagada(int idRemision) {
         cargarNotasRemision(idCliente); 
+    }
+    public void actualizarTablaRemisiones() {
+        cargarNotasRemision(idCliente);
     }
 
     private void cargarNotasRemision(int idCliente) {
@@ -48,7 +56,12 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
 
         String sql = """
             SELECT r.id_remision, r.folio, r.fecha, c.nombre,
-                   SUM(dr.cantidad * dr.precio_unitario) AS total
+                   SUM(dr.cantidad * dr.precio_unitario) AS total,
+                   IFNULL((
+                       SELECT SUM(a.monto)
+                       FROM abono_remision a
+                       WHERE a.id_remision = r.id_remision
+                   ), 0) AS abonos
             FROM remision r
             JOIN cliente c ON r.id_cliente = c.id_cliente
             JOIN detalle_remision dr ON r.id_remision = dr.id_remision
@@ -59,8 +72,7 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
         try (Connection conn = new Conexion().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, idCliente); 
-
+            stmt.setInt(1, idCliente);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -69,14 +81,17 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
                 String cliente = rs.getString("nombre");
                 String fecha = rs.getString("fecha");
                 double total = rs.getDouble("total");
-                
+                double abonos = rs.getDouble("abonos");
+                double saldoPendiente = total - abonos;
 
-                modelo.addRow(new Object[]{id_remision, folio, cliente, fecha, total,"Ver PDF", "Abonar"});
+                modelo.addRow(new Object[]{
+                    id_remision, folio, cliente, fecha, total, "Ver PDF", "Abonar", "Ver Abonos", saldoPendiente
+                });
             }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar remisiones no impresas.");
+            JOptionPane.showMessageDialog(this, "Error al cargar remisiones por cobrar.");
         }
 
         configurarBotonesTabla();
@@ -124,13 +139,13 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
 
         remisionesPendientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "id", "No. Folio", "Cliente", "Fecha", "Importe Total", "Ver PDF", "Abonar", "Ver Abonos"
+                "id", "No. Folio", "Cliente", "Fecha", "Importe Total", "Ver PDF", "Abonar", "Ver Abonos", "Saldo pendiente"
             }
         ));
         jScrollPane1.setViewportView(remisionesPendientes);
@@ -141,16 +156,18 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator1)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
+                .addContainerGap(26, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(22, 22, 22))
+                        .addComponent(nombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(288, 288, 288))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
-                        .addGap(200, 200, 200))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 852, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(238, 238, 238)
+                .addComponent(jLabel1)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,9 +178,9 @@ public class NotasPorCobrar extends javax.swing.JFrame implements PagoCompletoLi
                 .addComponent(nombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(82, Short.MAX_VALUE))
+                .addContainerGap(94, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

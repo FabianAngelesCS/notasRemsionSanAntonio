@@ -40,8 +40,14 @@ public class BotonVerCredito extends AbstractCellEditor implements TableCellRend
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JFrame ventanaPadre = (JFrame) SwingUtilities.getWindowAncestor(table);
-        NotasPorCobrar ventana = new NotasPorCobrar(idCliente, nombreCliente, ventanaPadre);
+        // Obtén la ventana padre real, debe ser CreditoTotal
+        Component c = SwingUtilities.getWindowAncestor(table);
+        if (!(c instanceof CreditoTotal)) {
+            JOptionPane.showMessageDialog(null, "Error: Ventana padre no es CreditoTotal");
+            return;
+        }
+        CreditoTotal ventanaCredito = (CreditoTotal) c;
+        NotasPorCobrar ventana = new NotasPorCobrar(idCliente, nombreCliente, ventanaCredito);
         ventana.setVisible(true);
         ventana.setLocationRelativeTo(null);
         fireEditingStopped();

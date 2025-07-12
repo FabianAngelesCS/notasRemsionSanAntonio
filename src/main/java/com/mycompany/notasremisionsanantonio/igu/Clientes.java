@@ -178,11 +178,11 @@ public class Clientes extends javax.swing.JFrame {
              ResultSet rs = stmt.executeQuery("SELECT id_cliente, nombre, telefono, direccion, observaciones, estatus FROM cliente")) {
 
             DefaultTableModel modelo = new DefaultTableModel(
-                new Object[]{"ID", "Nombre", "Teléfono", "Dirección", "Observaciones", "Estatus", "Editar", "Ver Crédito", "Notas pagadas"}, 0
+                new Object[]{"ID", "Nombre", "Teléfono", "Dirección", "Observaciones", "Estatus", "Editar"}, 0
             ) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return column == 5 || column == 6 || column == 7 || column == 8;
+                    return column == 5 || column == 6;
                 }
 
                 @Override
@@ -213,13 +213,7 @@ public class Clientes extends javax.swing.JFrame {
             TableColumn estadoColumn = TablaClientes.getColumnModel().getColumn(5); 
             estadoColumn.setCellRenderer(new EstadoBoton.Renderer());
             estadoColumn.setCellEditor(new EstadoBoton.Editor(new JCheckBox(), "cliente", "id_cliente"));
-            
-            TablaClientes.getColumnModel().getColumn(7).setCellRenderer(new BotonVerCredito(TablaClientes));
-            TablaClientes.getColumnModel().getColumn(7).setCellEditor(new BotonVerCredito(TablaClientes));
-            
-            TablaClientes.getColumnModel().getColumn(8).setCellRenderer(new BotonNotasPagadas(TablaClientes));
-            TablaClientes.getColumnModel().getColumn(8).setCellEditor(new BotonNotasPagadas(TablaClientes));
-            
+                        
             // Configurar columna de edición
             TableColumn editarColumn = TablaClientes.getColumnModel().getColumn(6);
             editarColumn.setCellRenderer(new EditarBoton.Renderer());
@@ -271,10 +265,6 @@ public class Clientes extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + e.getMessage());
         }
     }
-    
-     
-    
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TablaClientes;

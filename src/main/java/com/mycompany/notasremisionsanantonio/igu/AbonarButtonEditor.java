@@ -19,7 +19,7 @@ public class AbonarButtonEditor extends DefaultCellEditor {
         button.addActionListener(e -> {
             int row = table.getSelectedRow();
             int idRemision = (int) table.getValueAt(row, 0);
-           new AbonarRemision(idRemision, (PagoCompletoListener) SwingUtilities.getWindowAncestor(table)).setVisible(true);
+            new AbonarRemision(idRemision, (NotasPorCobrar) SwingUtilities.getWindowAncestor(table)).setVisible(true);
         });
     }
 

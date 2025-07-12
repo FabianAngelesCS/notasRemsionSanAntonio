@@ -1,6 +1,4 @@
-
 package com.mycompany.notasremisionsanantonio.igu;
-
 import com.mycompany.notasremisionsanantonio.persistencia.Conexion;
 import java.sql.*;
 import javax.swing.*;
@@ -18,6 +16,12 @@ public class NotasRemisionPagadas extends javax.swing.JFrame {
         setTitle("Notas de remisión pagadas");
         setLocationRelativeTo(null);
         cargarNotasRemisionPagadas(idCliente);
+        
+        // Ocultar columna id_remision (columna 0)
+        jTable1.getColumnModel().getColumn(0).setMinWidth(0);
+        jTable1.getColumnModel().getColumn(0).setMaxWidth(0);
+        jTable1.getColumnModel().getColumn(0).setWidth(0);
+        jTable1.getColumnModel().getColumn(0).setPreferredWidth(0);
         
         jTable1.getColumn("Abonos").setCellRenderer(new ButtonRendererNotasPagadas());
         jTable1.getColumn("Abonos").setCellEditor(new ButtonEditorNotasPagadas(new JCheckBox(), jTable1));
@@ -106,6 +110,9 @@ public class NotasRemisionPagadas extends javax.swing.JFrame {
             }
         ));
         jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setHeaderValue("Id remisión");
+        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

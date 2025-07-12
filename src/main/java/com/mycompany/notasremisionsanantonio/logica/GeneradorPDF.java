@@ -18,7 +18,7 @@ public class GeneradorPDF {
         File archivoPDF = new File(ruta);
         archivoPDF.deleteOnExit();
 
-        Document documento = new Document(PageSize.LETTER, 36, 36, 36, 36);
+        Document documento = new Document(PageSize.LETTER, 36, 36, 20, 36);
         PdfWriter writer = PdfWriter.getInstance(documento, new FileOutputStream(archivoPDF));
         documento.open();
 
@@ -193,7 +193,7 @@ public class GeneradorPDF {
 
         PdfPTable tabla = new PdfPTable(4);
         tabla.setWidthPercentage(100);
-        tabla.setWidths(new float[]{6f, 1.5f, 2f, 2.5f});
+        tabla.setWidths(new float[]{8f, 1.5f, 2f, 2f});
         tabla.setSpacingBefore(5);
 
         tabla.addCell(celdaEncabezadoConBorde("Producto"));
