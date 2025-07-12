@@ -15,22 +15,23 @@ public class VerAbonosRemision extends javax.swing.JFrame {
         this.ventanaNotasPorCobrar = ventanaNotasPorCobrar;
 
         setTitle("Abonos realizados");
-        setSize(400, 300);
+        setSize(500, 300); // Más ancho para mostrar concepto
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JTable tabla = new JTable();
         JScrollPane scroll = new JScrollPane(tabla);
-        getContentPane().add(scroll); // Añadir correctamente al layout
+        getContentPane().add(scroll);
 
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Fecha");
         modelo.addColumn("Monto");
+        modelo.addColumn("Concepto"); // ✅ nueva columna
 
         tabla.setModel(modelo);
 
         try (Connection conn = new Conexion().conectar()) {
-            String sql = "SELECT fecha, monto FROM abono_remision WHERE id_remision = ?";
+            String sql = "SELECT fecha, monto, observaciones FROM abono_remision WHERE id_remision = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idRemision);
             ResultSet rs = stmt.executeQuery();
@@ -38,7 +39,11 @@ public class VerAbonosRemision extends javax.swing.JFrame {
             while (rs.next()) {
                 String fecha = rs.getString("fecha");
                 double monto = rs.getDouble("monto");
-                modelo.addRow(new Object[]{fecha, String.format("$%.2f", monto)});
+                String concepto = rs.getString("observaciones");
+                if (concepto == null || concepto.trim().isEmpty()) {
+                    concepto = "Sin concepto";
+                }
+                modelo.addRow(new Object[]{fecha, String.format("$%.2f", monto), concepto});
             }
 
         } catch (SQLException e) {

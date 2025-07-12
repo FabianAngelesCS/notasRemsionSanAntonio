@@ -193,7 +193,7 @@ public class GeneradorPDF {
 
         PdfPTable tabla = new PdfPTable(4);
         tabla.setWidthPercentage(100);
-        tabla.setWidths(new float[]{8f, 1.5f, 2.5f, 2.5f});
+        tabla.setWidths(new float[]{8f, 2f, 2.5f, 2.5f});
         tabla.setSpacingBefore(5);
 
         tabla.addCell(celdaEncabezadoConBorde("Producto"));
